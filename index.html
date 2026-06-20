@@ -6,6 +6,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
 
@@ -16,27 +17,34 @@
           <h1 class="hero-title">Here's Your <br>Energy Overview</h1>
           <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
         </div>
-        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
+        <lottie-player 
+          src="https://assets4.lottiefiles.com/packages/lf20_xwmj0hsk.json" 
+          background="transparent" 
+          speed="1" 
+          class="house-image" 
+          style="width: 160px; height: 160px; right: 10px; bottom: 5px; object-fit: contain;" 
+          loop 
+          autoplay>
+        </lottie-player>
       </div>
 
       <div class="side-panel">
         <div class="info-card">
           <div class="flex-between"><h3 class="card-title">Total Energy (สะสม)</h3></div>
           <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">kWh</span></div>
-          <p class="text-sm">หน่วยไฟสะสมในเครื่องทั้งหมด</p>
           <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
         </div>
         
-        <div class="info-card clickable-card">
-          <div class="flex-between" style="margin-bottom: 15px;" onclick="openModal('system')">
+        <div class="info-card clickable-card" onclick="openModal('system')">
+          <div class="flex-between" style="margin-bottom: 15px;">
             <h3 class="card-title">สถานะระบบ (System)</h3>
           </div>
-          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
-          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
-          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
+          <div class="flex-between"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
+          <div class="flex-between"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
+          <div class="flex-between"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
           
           <div style="margin-top: 15px;">
-            <a id="otaBtn" href="#" target="_blank" style="display: none; background-color: var(--text-main); color: #fff; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background 0.2s;">
+            <a id="otaBtn" href="#" target="_blank" style="display: none; background-color: var(--text-main); color: #fff; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
               🔄 อัปเดตโค้ดไร้สาย (OTA)
             </a>
           </div>
@@ -47,9 +55,7 @@
     <div class="bottom-grid">
       <div class="card clickable-card" onclick="openModal('power')">
         <div class="card-header"><h3 class="card-title">Current Power</h3></div>
-        <div class="stat-row">
-          <div class="stat-box"><div class="value" id="power">0</div><div class="unit">kW (ปัจจุบัน)</div></div>
-        </div>
+        <div class="stat-box"><div class="value" id="power">0</div><div class="unit">kW</div></div>
         <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
       </div>
 
@@ -69,7 +75,7 @@
 
       <div class="card">
         <div class="card-header"><h3 class="card-title">This Month</h3></div>
-        <div class="stat-box" style="margin-bottom: 20px;"><div class="value" id="thisMonthEnergy" style="font-size: 2.2rem;">0</div><div class="unit">kWh (หน่วยเดือนนี้)</div></div>
+        <div class="stat-box" style="margin-bottom: 20px;"><div class="value" id="thisMonthEnergy" style="font-size: 2.2rem;">0</div><div class="unit">kWh</div></div>
         <div class="info-card" style="padding: 15px; box-shadow: none; border: 1px solid #e5e7eb;">
           <div class="flex-between" style="margin-bottom: 5px;"><span class="text-sm">ค่าไฟประมาณการ</span><span style="font-weight: 700; color: #10b981;"><span id="thisMonthCost">0</span> ฿</span></div>
           <div class="flex-between" style="margin: 0;"><span class="text-sm">Peak เดือนนี้</span><span style="font-weight: 700;"><span id="maxPowerMonth">0</span> kW</span></div>
@@ -78,36 +84,9 @@
 
       <div class="card">
         <div class="card-header"><h3 class="card-title">Power Trend</h3></div>
-        <div class="stat-box" style="margin-bottom: 10px;"><div class="unit">อัปเดต: <span id="last-update">กำลังโหลด...</span></div></div>
+        <div class="stat-box"><div class="unit">อัปเดต: <span id="last-update">...</span></div></div>
         <div class="chart-container" style="height: 120px;"><canvas id="trendLineChart"></canvas></div>
       </div>
-    </div>
-  </div>
-
-  <div id="graphModal" class="modal-overlay" onclick="closeModalOutside(event)">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <div class="modal-header">
-        <div>
-          <h2 class="modal-title" id="modalTitle">รายละเอียดกราฟ</h2>
-          <p class="modal-subtitle" id="modalSubtitle">กำลังโหลดข้อมูล...</p>
-        </div>
-        <div class="modal-controls">
-          <select id="timeRange" class="time-select" onchange="handleRangeChange()">
-            <option value="realtime">Real-time (10 นาทีล่าสุด)</option>
-            <option value="today">วันนี้ (Today)</option>
-            <option value="yesterday">เมื่อวาน (Yesterday)</option>
-            <option value="7days">ย้อนหลัง 7 วัน (7 Days)</option>
-            <option value="specific_date">📅 เลือกวันที่ (รายวัน)...</option>
-            <option value="specific_month">📑 เลือกรอบบิล (รายเดือน)...</option>
-          </select>
-          <input type="date" id="datePicker" class="time-select" style="display: none;" onchange="loadGraphData()">
-          <select id="monthPicker" class="time-select" style="display: none;" onchange="loadGraphData()">
-            <option value="">กำลังโหลดรอบบิล...</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-chart-wrapper"><canvas id="detailedChartCanvas"></canvas></div>
     </div>
   </div>
 
