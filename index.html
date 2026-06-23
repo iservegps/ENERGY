@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smart Energy Meter Dashboard</title>
+  <meta name="description" content="ระบบติดตามและบริหารจัดการพลังงานไฟฟ้าอัจฉริยะแบบเรียลไทม์ แสดงค่าโวลต์ กระแส และกำลังไฟฟ้าสะสม">
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
 
@@ -17,34 +18,118 @@
           <h1 class="hero-title">Here's Your <br>Energy Overview</h1>
           <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
         </div>
-        <lottie-player 
-          src="https://assets4.lottiefiles.com/packages/lf20_xwmj0hsk.json" 
-          background="transparent" 
-          speed="1" 
-          class="house-image" 
-          style="width: 160px; height: 160px; right: 10px; bottom: 5px; object-fit: contain;" 
-          loop 
-          autoplay>
-        </lottie-player>
+        
+        <!-- Right side widgets panel -->
+        <div class="hero-right-panel">
+          <!-- Energy Flow Animation Widget -->
+          <div class="energy-flow-container">
+            <h3 class="flow-title">⚡ การไหลของพลังงาน (ขณะนี้)</h3>
+            <div class="flow-widget">
+              <!-- SVG Flow Line -->
+              <svg class="flow-svg" viewBox="0 0 320 160">
+                <defs>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+                <path class="flow-path-bg" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+                <path id="flowPath" class="flow-path-active" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+                <polygon points="208,50 216,55 208,60" fill="var(--accent-blue)" />
+              </svg>
+              
+              <!-- Grid Box (Bottom Left) -->
+              <div class="flow-box grid-box">
+                <div class="flow-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M 12 2 L 12 22" />
+                    <path d="M 5 12 L 19 12" />
+                    <path d="M 3 20 L 21 20" />
+                    <path d="M 7 5 L 12 2" />
+                    <path d="M 17 5 L 12 2" />
+                    <path d="M 7 5 L 17 5" />
+                    <path d="M 6 12 L 12 5" />
+                    <path d="M 18 12 L 12 5" />
+                    <path d="M 5 20 L 12 12" />
+                    <path d="M 19 20 L 12 12" />
+                  </svg>
+                </div>
+                <div class="flow-details">
+                  <span class="flow-label">การไฟฟ้า</span>
+                  <span class="flow-value"><span id="gridPowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+                </div>
+              </div>
+              
+              <!-- House Circle (Top Right) -->
+              <div class="flow-box house-circle-container">
+                <div class="house-circle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
+                <div class="flow-details house-details">
+                  <span class="flow-label">กำลังใช้ไฟฟ้า</span>
+                  <span class="flow-value"><span id="housePowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Saving Card (Electricity Cost Savings) -->
+          <div class="card saving-card hero-saving-card">
+            <div class="saving-card-content">
+              <div class="piggy-icon-container">
+                <svg viewBox="0 0 24 24" class="piggy-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 5c-1.5 0-2.8 1.1-3 2.5a6 6 0 0 0-8 0C7.8 6.1 6.5 5 5 5a4 4 0 0 0-4 4c0 2.5 1.5 4.5 3.5 5.3A4.5 4.5 0 0 0 8.5 19h7a4.5 4.5 0 0 0 4-4.7c2-.8 3.5-2.8 3.5-5.3a4 4 0 0 0-4-4Z" />
+                  <path d="M16 4.5 14 7" />
+                  <circle cx="9" cy="10" r="1" fill="currentColor" />
+                  <path d="M11 6h2" />
+                  <path d="M9 19v2M15 19v2" />
+                </svg>
+              </div>
+              <div class="saving-details">
+                <div class="saving-header">
+                  <span class="saving-title">ประหยัดค่าไฟ</span>
+                  <span class="info-icon-btn" onclick="alert('คำนวณจากการประหยัดพลังงานเมื่อเทียบกับค่าไฟเฉลี่ยสะสมเมื่อวาน (คิดที่หน่วยละ 4.2 บาท)')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4M12 8h.01" />
+                    </svg>
+                  </span>
+                </div>
+                <div class="saving-value-wrapper">
+                  <span class="saving-value" id="savingsValue">0</span>
+                  <span class="saving-unit">บาท</span>
+                </div>
+                <div class="saving-subtext" id="savingsSubtext">
+                  กำลังคำนวณ...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
       </div>
 
       <div class="side-panel">
         <div class="info-card">
           <div class="flex-between"><h3 class="card-title">Total Energy (สะสม)</h3></div>
           <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">kWh</span></div>
+          <p class="text-sm">หน่วยไฟสะสมในเครื่องทั้งหมด</p>
           <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
         </div>
         
-        <div class="info-card clickable-card" onclick="openModal('system')">
-          <div class="flex-between" style="margin-bottom: 15px;">
+        <div class="info-card clickable-card">
+          <div class="flex-between" style="margin-bottom: 15px;" onclick="openModal('system')">
             <h3 class="card-title">สถานะระบบ (System)</h3>
           </div>
-          <div class="flex-between"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
-          <div class="flex-between"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
-          <div class="flex-between"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
           
           <div style="margin-top: 15px;">
-            <a id="otaBtn" href="#" target="_blank" style="display: none; background-color: var(--text-main); color: #fff; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+            <a id="otaBtn" href="#" target="_blank" style="display: none; background-color: var(--text-main); color: #fff; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background 0.2s;">
               🔄 อัปเดตโค้ดไร้สาย (OTA)
             </a>
           </div>
@@ -55,7 +140,9 @@
     <div class="bottom-grid">
       <div class="card clickable-card" onclick="openModal('power')">
         <div class="card-header"><h3 class="card-title">Current Power</h3></div>
-        <div class="stat-box"><div class="value" id="power">0</div><div class="unit">kW</div></div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="value" id="power">0.00</div><div class="unit">kW (ปัจจุบัน)</div></div>
+        </div>
         <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
       </div>
 
@@ -68,61 +155,129 @@
           </div>
         </div>
         <div class="flex-between" style="margin-top: 15px;">
-          <span class="text-sm">Peak: <b id="maxPowerToday">0</b> kW</span>
+          <span class="text-sm">Peak: <b id="maxPowerToday">0.00</b> kW</span>
           <span class="text-sm" style="color: var(--accent-orange);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
         </div>
       </div>
 
+
+
       <div class="card">
         <div class="card-header"><h3 class="card-title">This Month</h3></div>
-        <div class="stat-box" style="margin-bottom: 20px;"><div class="value" id="thisMonthEnergy" style="font-size: 2.2rem;">0</div><div class="unit">kWh</div></div>
+        <div class="stat-box" style="margin-bottom: 20px;"><div class="value" id="thisMonthEnergy" style="font-size: 2.2rem;">0</div><div class="unit">kWh (หน่วยเดือนนี้)</div></div>
         <div class="info-card" style="padding: 15px; box-shadow: none; border: 1px solid #e5e7eb;">
           <div class="flex-between" style="margin-bottom: 5px;"><span class="text-sm">ค่าไฟประมาณการ</span><span style="font-weight: 700; color: #10b981;"><span id="thisMonthCost">0</span> ฿</span></div>
-          <div class="flex-between" style="margin: 0;"><span class="text-sm">Peak เดือนนี้</span><span style="font-weight: 700;"><span id="maxPowerMonth">0</span> kW</span></div>
+          <div class="flex-between" style="margin: 0;"><span class="text-sm">Peak เดือนนี้</span><span style="font-weight: 700;"><span id="maxPowerMonth">0.00</span> kW</span></div>
         </div>
       </div>
 
       <div class="card">
         <div class="card-header"><h3 class="card-title">Power Trend</h3></div>
-        <div class="stat-box"><div class="unit">อัปเดต: <span id="last-update">...</span></div></div>
+        <div class="stat-box" style="margin-bottom: 10px;"><div class="unit">อัปเดต: <span id="last-update">กำลังโหลด...</span></div></div>
         <div class="chart-container" style="height: 120px;"><canvas id="trendLineChart"></canvas></div>
       </div>
     </div>
   </div>
 
+  <div id="graphModal" class="modal-overlay" onclick="closeModalOutside(event)">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="modalTitle">รายละเอียดกราฟ</h2>
+          <p class="modal-subtitle" id="modalSubtitle">กำลังโหลดข้อมูล...</p>
+        </div>
+        <div class="modal-controls">
+          <select id="timeRange" class="time-select" onchange="handleRangeChange()">
+            <option value="realtime">Real-time (10 นาทีล่าสุด)</option>
+            <option value="today">วันนี้ (Today)</option>
+            <option value="yesterday">เมื่อวาน (Yesterday)</option>
+            <option value="7days">ย้อนหลัง 7 วัน (7 Days)</option>
+            <option value="specific_date">📅 เลือกวันที่ (รายวัน)...</option>
+            <option value="specific_month">📑 เลือกรอบบิล (รายเดือน)...</option>
+          </select>
+          <input type="date" id="datePicker" class="time-select" style="display: none;" onchange="loadGraphData()">
+          <select id="monthPicker" class="time-select" style="display: none;" onchange="loadGraphData()">
+            <option value="">กำลังโหลดรอบบิล...</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-chart-wrapper"><canvas id="detailedChartCanvas"></canvas></div>
+    </div>
+  </div>
+
   <script>
     // 🔴 1. วาง URL Web App ของ Google Apps Script ไว้ตรงนี้
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec";
 
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
-    Chart.defaults.color = '#6b7280';
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
     
     const MAX_HISTORY = 60;
     let historyTime = []; let historyPower = []; let historyVoltage = []; let historyCurrent = []; let historyEnergy = []; 
 
     const ctxBar = document.getElementById('powerBarChart').getContext('2d');
+    let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80);
+    gradBar.addColorStop(0, '#ff5722');
+    gradBar.addColorStop(1, 'rgba(255, 87, 34, 0.05)');
     let powerData = Array(15).fill(0);
-    const powerBarChart = new Chart(ctxBar, { type: 'bar', data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: '#ff5722', borderRadius: 4, barPercentage: 0.6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    const powerBarChart = new Chart(ctxBar, { type: 'bar', data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: gradBar, borderRadius: 4, barPercentage: 0.6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    
     const ctxGauge = document.getElementById('todayGauge').getContext('2d');
-    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#ff5722', '#e5e7eb'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#ff5722', 'rgba(255, 255, 255, 0.06)'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    
     const ctxLine = document.getElementById('trendLineChart').getContext('2d');
-    const trendLineChart = new Chart(ctxLine, { type: 'line', data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(0), borderColor: '#ff5722', borderWidth: 2, tension: 0.4, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    let gradLine = ctxLine.createLinearGradient(0, 0, 0, 100);
+    gradLine.addColorStop(0, 'rgba(255, 87, 34, 0.3)');
+    gradLine.addColorStop(1, 'rgba(255, 87, 34, 0)');
+    const trendLineChart = new Chart(ctxLine, { type: 'line', data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(0), borderColor: '#ff5722', borderWidth: 2, tension: 0.4, pointRadius: 0, backgroundColor: gradLine, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     
     let detailedChartInstance = null; let currentActiveModal = '';
 
     function setupModalChartConfig(type) {
-      let chartConfig = { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' } }, animation: { duration: 0 } } };
+      let gridConfig = { color: 'rgba(255, 255, 255, 0.05)', drawOnChartArea: true };
+      let ticksConfig = { color: '#94a3b8' };
+      let titleConfig = { display: true, color: '#e2e8f0' };
+
+      let chartConfig = { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: '#e2e8f0' } } }, animation: { duration: 0 } } };
+      
+      let ctx = document.getElementById('detailedChartCanvas').getContext('2d');
+      
       if (type === 'power') {
-        // 🟢 แก้ไข Label และแกน Y ในกราฟประวัติ ให้แสดงเป็น kW
-        chartConfig.data.datasets.push({ label: 'Power (kW)', data: [], borderColor: '#ff5722', backgroundColor: 'rgba(255, 87, 34, 0.1)', fill: true, tension: 0.3, pointRadius: 2 });
-        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'kW' } } };
+        let grad = ctx.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, 'rgba(255, 87, 34, 0.35)');
+        grad.addColorStop(1, 'rgba(255, 87, 34, 0.01)');
+        chartConfig.data.datasets.push({ label: 'Power (kW)', data: [], borderColor: '#ff5722', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
+        chartConfig.options.scales = {
+          x: { grid: gridConfig, ticks: ticksConfig },
+          y: { beginAtZero: true, grid: gridConfig, ticks: ticksConfig, title: { ...titleConfig, text: 'kW' } }
+        };
       } else if (type === 'system') {
-        chartConfig.data.datasets.push({ label: 'Voltage (V)', data: [], borderColor: '#38bdf8', backgroundColor: '#38bdf8', yAxisID: 'y', tension: 0.3, pointRadius: 2 });
-        chartConfig.data.datasets.push({ label: 'Current (A)', data: [], borderColor: '#ffc107', backgroundColor: '#ffc107', yAxisID: 'y1', tension: 0.3, pointRadius: 2 });
-        chartConfig.options.scales = { y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'V' } }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'A' }, grid: { drawOnChartArea: false } } };
+        let gradV = ctx.createLinearGradient(0, 0, 0, 300);
+        gradV.addColorStop(0, 'rgba(56, 189, 248, 0.3)');
+        gradV.addColorStop(1, 'rgba(56, 189, 248, 0.01)');
+        
+        let gradC = ctx.createLinearGradient(0, 0, 0, 300);
+        gradC.addColorStop(0, 'rgba(255, 193, 7, 0.3)');
+        gradC.addColorStop(1, 'rgba(255, 193, 7, 0.01)');
+        
+        chartConfig.data.datasets.push({ label: 'Voltage (V)', data: [], borderColor: '#38bdf8', backgroundColor: gradV, fill: true, yAxisID: 'y', tension: 0.3, pointRadius: 2 });
+        chartConfig.data.datasets.push({ label: 'Current (A)', data: [], borderColor: '#ffc107', backgroundColor: gradC, fill: true, yAxisID: 'y1', tension: 0.3, pointRadius: 2 });
+        chartConfig.options.scales = {
+          x: { grid: gridConfig, ticks: ticksConfig },
+          y: { type: 'linear', display: true, position: 'left', grid: gridConfig, ticks: ticksConfig, title: { ...titleConfig, text: 'V' } },
+          y1: { type: 'linear', display: true, position: 'right', ticks: ticksConfig, title: { ...titleConfig, text: 'A' }, grid: { drawOnChartArea: false } }
+        };
       } else if (type === 'energy') {
-        chartConfig.type = 'bar'; chartConfig.data.datasets.push({ label: 'Energy (kWh)', data: [], backgroundColor: '#10b981', borderRadius: 4 });
-        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'kWh' } } };
+        let gradE = ctx.createLinearGradient(0, 0, 0, 300);
+        gradE.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
+        gradE.addColorStop(1, 'rgba(16, 185, 129, 0.15)');
+        chartConfig.type = 'bar'; chartConfig.data.datasets.push({ label: 'Energy (kWh)', data: [], backgroundColor: gradE, borderRadius: 4 });
+        chartConfig.options.scales = {
+          x: { grid: gridConfig, ticks: ticksConfig },
+          y: { beginAtZero: true, grid: gridConfig, ticks: ticksConfig, title: { ...titleConfig, text: 'kWh' } }
+        };
       }
       return chartConfig;
     }
@@ -203,7 +358,11 @@
     function updateChartData(times, powers, voltages, currents, energies) {
       if (!detailedChartInstance) return;
       detailedChartInstance.data.labels = times || [];
-      if (currentActiveModal === 'power' && detailedChartInstance.data.datasets[0]) detailedChartInstance.data.datasets[0].data = powers || [];
+      if (currentActiveModal === 'power' && detailedChartInstance.data.datasets[0]) {
+        const range = document.getElementById('timeRange').value;
+        const displayPowers = (range === 'realtime') ? (powers || []) : (powers || []).map(p => p / 1000);
+        detailedChartInstance.data.datasets[0].data = displayPowers;
+      }
       else if (currentActiveModal === 'system') {
         if (detailedChartInstance.data.datasets[0]) detailedChartInstance.data.datasets[0].data = voltages || [];
         if (detailedChartInstance.data.datasets[1]) detailedChartInstance.data.datasets[1].data = currents || [];
@@ -213,24 +372,91 @@
       detailedChartInstance.update();
     }
 
+    let yesterdayEnergy = 0;
+    function loadYesterdayEnergy() {
+      fetch(`${WEB_APP_URL}?action=getHistoricalData&range=yesterday`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.energies && data.energies.length > 0) {
+            yesterdayEnergy = data.energies.reduce((sum, e) => sum + e, 0);
+          } else {
+            yesterdayEnergy = 0;
+          }
+          updateSavingsDisplay();
+        })
+        .catch(err => {
+          console.error("Error loading yesterday energy:", err);
+          updateSavingsDisplay();
+        });
+    }
+
+    function updateSavingsDisplay() {
+      const todayEnergy = parseFloat(document.getElementById('todayEnergy').innerText) || 0;
+      const baseYesterday = yesterdayEnergy > 0 ? yesterdayEnergy : 12.5; // Fallback baseline: 12.5 kWh
+      const energySaved = baseYesterday - todayEnergy;
+      let savingsBaht = 0;
+      let savingsPercent = 0;
+      
+      const savingsValEl = document.getElementById('savingsValue');
+      const savingsSubtextEl = document.getElementById('savingsSubtext');
+      
+      if (!savingsValEl || !savingsSubtextEl) return;
+      
+      if (energySaved > 0) {
+        savingsBaht = energySaved * 4.2;
+        savingsPercent = (energySaved / baseYesterday) * 100;
+        savingsValEl.innerText = Math.round(savingsBaht);
+        savingsSubtextEl.innerHTML = `<span class="saving-up">▲ ${savingsPercent.toFixed(0)}%</span> จากเมื่อวาน`;
+      } else {
+        savingsBaht = 0;
+        const increasePercent = (Math.abs(energySaved) / baseYesterday) * 100;
+        savingsValEl.innerText = "0";
+        savingsSubtextEl.innerHTML = `<span class="saving-down">▼ ${increasePercent.toFixed(0)}%</span> จากเมื่อวาน`;
+      }
+    }
+
     function updateDashboard() {
       fetch(`${WEB_APP_URL}?action=getLatestData`)
         .then(res => res.json())
         .then(data => {
           if (data.error) { document.getElementById('period').innerText = data.error; return; }
+          const powerKw = (parseFloat(data.power) / 1000).toFixed(2);
+          const maxPowerTodayKw = (parseFloat(data.maxPowerToday) / 1000).toFixed(2);
+          const maxPowerMonthKw = (parseFloat(data.maxPowerMonth) / 1000).toFixed(2);
+
           document.getElementById('period').innerText = "รอบบิล: " + data.sheetName;
-          document.getElementById('power').innerText = data.power;
+          document.getElementById('power').innerText = powerKw;
           document.getElementById('voltage').innerText = data.voltage;
           document.getElementById('current').innerText = data.current;
           document.getElementById('pf').innerText = data.pf;
           document.getElementById('todayEnergy').innerText = data.todayEnergy;
+          updateSavingsDisplay();
           document.getElementById('todayCost').innerText = data.todayCost;
-          document.getElementById('maxPowerToday').innerText = data.maxPowerToday;
+          document.getElementById('maxPowerToday').innerText = maxPowerTodayKw;
           document.getElementById('thisMonthEnergy').innerText = data.thisMonthEnergy;
           document.getElementById('thisMonthCost').innerText = data.thisMonthCost;
-          document.getElementById('maxPowerMonth').innerText = data.maxPowerMonth;
+          document.getElementById('maxPowerMonth').innerText = maxPowerMonthKw;
           document.getElementById('totalEnergy').innerText = data.totalEnergy;
           document.getElementById('last-update').innerText = data.time;
+
+          // Update energy flow values
+          document.getElementById('gridPowerValue').innerText = powerKw;
+          document.getElementById('housePowerValue').innerText = powerKw;
+
+          // Dynamic flow line animation speed
+          const flowPath = document.getElementById('flowPath');
+          if (flowPath) {
+            const powerVal = parseFloat(data.power) || 0;
+            if (powerVal < 10) {
+              flowPath.style.animationPlayState = 'paused';
+              flowPath.style.opacity = '0.3';
+            } else {
+              flowPath.style.animationPlayState = 'running';
+              flowPath.style.opacity = '1';
+              const duration = Math.max(0.4, Math.min(4.0, 4 - (powerVal / 1500)));
+              flowPath.style.animationDuration = duration + 's';
+            }
+          }
 
           // 🛡️ อัปเดตลิงก์ปุ่ม OTA อัตโนมัติจาก IP ล่าสุด
           const otaBtn = document.getElementById('otaBtn');
@@ -243,11 +469,12 @@
 
           let now = new Date();
           let timeString = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+          const powerValueKw = parseFloat(data.power) / 1000 || 0;
           historyTime.push(timeString);
-          historyPower.push(parseFloat(data.power) || 0); historyVoltage.push(parseFloat(data.voltage) || 0); historyCurrent.push(parseFloat(data.current) || 0); historyEnergy.push(parseFloat(data.todayEnergy) || 0);
+          historyPower.push(powerValueKw); historyVoltage.push(parseFloat(data.voltage) || 0); historyCurrent.push(parseFloat(data.current) || 0); historyEnergy.push(parseFloat(data.todayEnergy) || 0);
 
           if (historyTime.length > MAX_HISTORY) { historyTime.shift(); historyPower.shift(); historyVoltage.shift(); historyCurrent.shift(); historyEnergy.shift(); }
-          powerData.shift(); powerData.push(parseFloat(data.power));
+          powerData.shift(); powerData.push(powerValueKw);
           powerBarChart.update();
           trendLineChart.data.datasets[0].data = powerData; trendLineChart.update();
           
@@ -263,6 +490,7 @@
     }
 
     updateDashboard();
+    loadYesterdayEnergy();
     setInterval(updateDashboard, 10000); 
   </script>
 </body>
