@@ -31,6 +31,7 @@
 
   <div class="main-content">
     
+    <!-- หน้าหลัก -->
     <div id="page-dashboard" class="page active">
       <div class="top-section">
         <div class="hero-card">
@@ -70,18 +71,23 @@
               </div>
             </div>
             
-            <div class="card saving-card hero-saving-card">
-              <div class="saving-card-content">
-                <div class="piggy-icon-container"><i class="fa-solid fa-piggy-bank" style="font-size: 1.5rem;"></i></div>
-                <div class="saving-details">
-                  <div class="saving-header"><span class="saving-title">ประหยัดค่าไฟ</span></div>
-                  <div class="saving-value-wrapper">
-                    <span class="saving-value" id="savingsValue">0</span><span class="saving-unit">บาท</span>
+            <!-- ส่วนการ์ดสถานะ ออนไลน์/ออฟไลน์ แทนที่การ์ดประหยัดค่าไฟ -->
+            <div class="card status-card">
+              <div class="status-card-content">
+                <div class="status-icon-container" id="statusIconContainer">
+                  <div class="status-pulse"></div>
+                  <i class="fa-solid fa-wifi" id="statusIcon"></i>
+                </div>
+                <div class="status-details">
+                  <div class="status-header"><span class="status-title">สถานะอุปกรณ์ (ESP32)</span></div>
+                  <div class="status-value-wrapper">
+                    <span class="status-value" id="mainDeviceStatus">กำลังโหลด...</span>
                   </div>
-                  <div class="saving-subtext" id="savingsSubtext">กำลังคำนวณ...</div>
+                  <div class="status-subtext" id="statusSubtext">ตรวจสอบการเชื่อมต่อ</div>
                 </div>
               </div>
             </div>
+
           </div>
           <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
         </div>
@@ -140,6 +146,7 @@
       </div>
     </div>
 
+    <!-- หน้าประวัติ -->
     <div id="page-history" class="page">
       <div class="history-header">
         <div>
@@ -169,6 +176,7 @@
       </div>
     </div>
 
+    <!-- หน้าแจ้งเตือน -->
     <div id="page-notifications" class="page">
       <h2 class="page-title">ระบบแจ้งเตือนระบบไฟ</h2>
       <p class="text-sm">ตรวจสอบสถานะการทำงานของสมาร์ทมิเตอร์และบันทึกเหตุการณ์ผิดปกติ</p>
@@ -195,6 +203,7 @@
       </div>
     </div>
 
+    <!-- หน้าตั้งค่า -->
     <div id="page-settings" class="page">
       <h2 class="page-title">การตั้งค่าระบบ</h2>
       
@@ -259,8 +268,8 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec";
 
     // ตัวแปรเก็บสถานะการแจ้งเตือน
-    let lastDeviceStatus = null;   // true = online, false = offline
-    let lastPowerOverlimit = null; // true = overlimit, false = normal
+    let lastDeviceStatus = null;   
+    let lastPowerOverlimit = null; 
 
     function addNotificationLog(message, type = 'info') {
       const logsEl = document.getElementById('notificationLogs');
@@ -284,11 +293,7 @@
       `;
       
       logsEl.insertBefore(logItem, logsEl.firstChild);
-      
-      // จำกัดประวัติแสดงสูงสุดแค่ 20 แถวล่าสุดบนหน้าเว็บย่อย
-      while (logsEl.children.length > 20) {
-        logsEl.removeChild(logsEl.lastChild);
-      }
+      while (logsEl.children.length > 20) { logsEl.removeChild(logsEl.lastChild); }
     }
 
     function switchPage(pageId) {
@@ -395,30 +400,6 @@
       historyChartInstance.update();
     }
 
-    let yesterdayEnergy = 0;
-    function loadYesterdayEnergy() {
-      fetch(`${WEB_APP_URL}?action=getHistoricalData&range=yesterday`).then(res => res.json()).then(data => {
-          yesterdayEnergy = (data && data.energies) ? data.energies.reduce((sum, e) => sum + e, 0) : 0;
-          updateSavingsDisplay();
-      }).catch(e => console.error(e));
-    }
-
-    function updateSavingsDisplay() {
-      const todayEnergy = parseFloat(document.getElementById('todayEnergy').innerText) || 0;
-      const baseYesterday = yesterdayEnergy > 0 ? yesterdayEnergy : 10; 
-      const energySaved = baseYesterday - todayEnergy;
-      const savingsValEl = document.getElementById('savingsValue');
-      const savingsSubtextEl = document.getElementById('savingsSubtext');
-      
-      if (energySaved > 0) {
-        savingsValEl.innerText = Math.round(energySaved * 4.2);
-        savingsSubtextEl.innerHTML = `<span style="color:var(--accent-green)">▲ ${((energySaved/baseYesterday)*100).toFixed(0)}%</span> จากเมื่อวาน`;
-      } else {
-        savingsValEl.innerText = "0";
-        savingsSubtextEl.innerHTML = `<span style="color:var(--accent-orange)">▼ ${((Math.abs(energySaved)/baseYesterday)*100).toFixed(0)}%</span> จากเมื่อวาน`;
-      }
-    }
-
     function updateDashboard() {
       fetch(`${WEB_APP_URL}?action=getLatestData`).then(res => res.json()).then(data => {
         if (data.error) { document.getElementById('period').innerText = data.error; return; }
@@ -466,35 +447,55 @@
         todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; 
         todayGauge.update();
 
-        updateSavingsDisplay();
-
         // ==========================================
-        // 🚨 LOGIC ประมวลผลและแจ้งเตือนความผิดปกติ
+        // 🚨 UPDATE UI STATUS (ONLINE / OFFLINE)
         // ==========================================
-        
-        // 1. ตรวจสอบสถานะการออนไลน์ (Online / Offline)
         const currentOnline = data.isOnline;
+        const mainDeviceStatus = document.getElementById('mainDeviceStatus');
+        const statusIconContainer = document.getElementById('statusIconContainer');
+        const statusIcon = document.getElementById('statusIcon');
+        const statusSubtext = document.getElementById('statusSubtext');
         const deviceStatusEl = document.getElementById('notifDeviceStatus');
-        if (deviceStatusEl) {
-          if (currentOnline) {
+
+        if (currentOnline) {
+          // แจ้งเตือนการ์ดด้านบน (แทนประหยัดค่าไฟ)
+          mainDeviceStatus.innerText = "ONLINE";
+          mainDeviceStatus.style.color = "var(--accent-green)";
+          statusIconContainer.className = "status-icon-container online";
+          statusIcon.className = "fa-solid fa-wifi";
+          statusSubtext.innerText = "เชื่อมต่อและรับข้อมูลปกติ";
+          statusSubtext.style.color = "var(--text-muted)";
+
+          // ล็อกแจ้งเตือนหน้าตั้งค่า
+          if (deviceStatusEl) {
             deviceStatusEl.innerText = "🟢 ออนไลน์ปกติ (Connected)";
             deviceStatusEl.style.color = "var(--accent-green)";
-            if (lastDeviceStatus === false) {
-              addNotificationLog("อุปกรณ์กลับมาเชื่อมต่อสัญญาณออนไลน์เรียบร้อย", "info");
-            } else if (lastDeviceStatus === null) {
-              addNotificationLog("เชื่อมต่อระบบกับฐานข้อมูลสำเร็จ", "info");
-            }
-          } else {
+          }
+          if (lastDeviceStatus === false) addNotificationLog("อุปกรณ์กลับมาเชื่อมต่อสัญญาณออนไลน์เรียบร้อย", "info");
+          else if (lastDeviceStatus === null) addNotificationLog("เชื่อมต่อระบบกับฐานข้อมูลสำเร็จ", "info");
+        } else {
+          // แจ้งเตือนการ์ดด้านบน (แทนประหยัดค่าไฟ)
+          mainDeviceStatus.innerText = "OFFLINE";
+          mainDeviceStatus.style.color = "var(--accent-orange)";
+          statusIconContainer.className = "status-icon-container offline";
+          statusIcon.className = "fa-solid fa-triangle-exclamation";
+          statusSubtext.innerText = "อุปกรณ์เงียบหาย/ขาดการติดต่อ";
+          statusSubtext.style.color = "var(--accent-orange)";
+
+          // ล็อกแจ้งเตือนหน้าตั้งค่า
+          if (deviceStatusEl) {
             deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)";
             deviceStatusEl.style.color = "var(--accent-orange)";
-            if (lastDeviceStatus === true || lastDeviceStatus === null) {
-              addNotificationLog("แจ้งเตือน: อุปกรณ์ขาดการส่งข้อมูลเกินเวลาที่ตั้งไว้ (Offline)", "danger");
-            }
           }
-          lastDeviceStatus = currentOnline;
+          if (lastDeviceStatus === true || lastDeviceStatus === null) {
+            addNotificationLog("แจ้งเตือน: อุปกรณ์ขาดการส่งข้อมูลเกินเวลาที่ตั้งไว้ (Offline)", "danger");
+          }
         }
+        lastDeviceStatus = currentOnline;
 
-        // 2. ตรวจสอบสถานะไฟฟ้าโหลดเกินพิกัด (Over-power threshold)
+        // ==========================================
+        // 🚨 OVERLIMIT NOTIFICATION
+        // ==========================================
         const currentPowerKw = parseFloat(powerKw);
         const maxLimitKw = parseFloat(data.maxPowerLimit) || 5.0;
         const powerStatusEl = document.getElementById('notifPowerStatus');
@@ -553,7 +554,6 @@
     }
 
     updateDashboard();
-    loadYesterdayEnergy();
     setInterval(updateDashboard, 10000); 
 
   </script>
