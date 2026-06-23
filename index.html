@@ -453,7 +453,8 @@
             } else {
               flowPath.style.animationPlayState = 'running';
               flowPath.style.opacity = '1';
-              const duration = Math.max(0.4, Math.min(4.0, 4 - (powerVal / 1500)));
+              // Inverse scaling: speed is directly proportional to power usage
+              const duration = Math.max(0.2, Math.min(6.0, 1000 / powerVal));
               flowPath.style.animationDuration = duration + 's';
             }
           }
