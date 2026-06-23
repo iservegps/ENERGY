@@ -156,7 +156,7 @@
         </div>
         <div class="flex-between" style="margin-top: 15px;">
           <span class="text-sm">Peak: <b id="maxPowerToday">0.00</b> kW</span>
-          <span class="text-sm" style="color: var(--accent-orange);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
+          <span class="text-sm" style="color: var(--accent-green);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
         </div>
       </div>
 
@@ -219,19 +219,19 @@
 
     const ctxBar = document.getElementById('powerBarChart').getContext('2d');
     let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80);
-    gradBar.addColorStop(0, '#ff5722');
-    gradBar.addColorStop(1, 'rgba(255, 87, 34, 0.05)');
+    gradBar.addColorStop(0, '#10b981');
+    gradBar.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
     let powerData = Array(15).fill(0);
     const powerBarChart = new Chart(ctxBar, { type: 'bar', data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: gradBar, borderRadius: 4, barPercentage: 0.6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     
     const ctxGauge = document.getElementById('todayGauge').getContext('2d');
-    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#ff5722', 'rgba(255, 255, 255, 0.06)'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#10b981', 'rgba(255, 255, 255, 0.06)'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     
     const ctxLine = document.getElementById('trendLineChart').getContext('2d');
     let gradLine = ctxLine.createLinearGradient(0, 0, 0, 100);
-    gradLine.addColorStop(0, 'rgba(255, 87, 34, 0.3)');
-    gradLine.addColorStop(1, 'rgba(255, 87, 34, 0)');
-    const trendLineChart = new Chart(ctxLine, { type: 'line', data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(0), borderColor: '#ff5722', borderWidth: 2, tension: 0.4, pointRadius: 0, backgroundColor: gradLine, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    gradLine.addColorStop(0, 'rgba(16, 185, 129, 0.3)');
+    gradLine.addColorStop(1, 'rgba(16, 185, 129, 0)');
+    const trendLineChart = new Chart(ctxLine, { type: 'line', data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(0), borderColor: '#10b981', borderWidth: 2, tension: 0.4, pointRadius: 0, backgroundColor: gradLine, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     
     let detailedChartInstance = null; let currentActiveModal = '';
 
@@ -246,9 +246,9 @@
       
       if (type === 'power') {
         let grad = ctx.createLinearGradient(0, 0, 0, 300);
-        grad.addColorStop(0, 'rgba(255, 87, 34, 0.35)');
-        grad.addColorStop(1, 'rgba(255, 87, 34, 0.01)');
-        chartConfig.data.datasets.push({ label: 'Power (kW)', data: [], borderColor: '#ff5722', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
+        grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+        grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+        chartConfig.data.datasets.push({ label: 'Power (kW)', data: [], borderColor: '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
         chartConfig.options.scales = {
           x: { grid: gridConfig, ticks: ticksConfig },
           y: { beginAtZero: true, grid: gridConfig, ticks: ticksConfig, title: { ...titleConfig, text: 'kW' } }
