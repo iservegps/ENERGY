@@ -20,6 +20,9 @@
       <a href="#" class="nav-item" onclick="switchPage('history')">
         <i class="fa-solid fa-chart-line"></i><span class="nav-text">ประวัติ</span>
       </a>
+      <a href="#" class="nav-item" onclick="switchPage('notifications')">
+        <i class="fa-solid fa-bell"></i><span class="nav-text">แจ้งเตือน</span>
+      </a>
       <a href="#" class="nav-item" onclick="switchPage('settings')">
         <i class="fa-solid fa-gear"></i><span class="nav-text">ตั้งค่า</span>
       </a>
@@ -166,12 +169,38 @@
       </div>
     </div>
 
+    <div id="page-notifications" class="page">
+      <h2 class="page-title">ระบบแจ้งเตือนระบบไฟ</h2>
+      <p class="text-sm">ตรวจสอบสถานะการทำงานของสมาร์ทมิเตอร์และบันทึกเหตุการณ์ผิดปกติ</p>
+      
+      <div class="settings-grid" style="margin-top: 25px;">
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-circle-info" style="color: var(--accent-blue)"></i> สถานะอุปกรณ์ปัจจุบัน</h3>
+          <div class="status-row">
+            <span class="text-sm">สถานะการเชื่อมต่อมิเตอร์</span>
+            <span id="notifDeviceStatus" class="status-val" style="color: var(--accent-green);">กำลังโหลด...</span>
+          </div>
+          <div class="status-row">
+            <span class="text-sm">สถานะปริมาณโหลดไฟฟ้า</span>
+            <span id="notifPowerStatus" class="status-val" style="color: var(--accent-green);">กำลังโหลด...</span>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-yellow)"></i> ประวัติการแจ้งเตือนล่าสุด</h3>
+          <div id="notificationLogs" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 5px;">
+            <p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">ยังไม่มีบันทึกการแจ้งเตือนเข้ามาในรอบเปิดหน้านี้</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="page-settings" class="page">
       <h2 class="page-title">การตั้งค่าระบบ</h2>
       
       <div class="settings-grid">
         <div class="card">
-          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่าการคำนวณบิล</h3>
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่าการคำนวณบิลและการแจ้งเตือน</h3>
           
           <div class="form-group">
             <label class="form-label">วันตัดรอบบิล (วันที่ 1-28)</label>
@@ -189,6 +218,16 @@
             <label class="form-label">ภาษีมูลค่าเพิ่ม VAT (ทศนิยม เช่น 0.07)</label>
             <input type="number" id="setVat" class="input-field" step="0.01" placeholder="เช่น 0.07">
           </div>
+
+          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+            <label class="form-label" style="color: var(--accent-orange);">⚠️ แจ้งเตือนเมื่อใช้ไฟเกินกำหนด (kW)</label>
+            <input type="number" id="setMaxPower" class="input-field" step="0.1" placeholder="เช่น 5.0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">⏳ ถือว่าออฟไลน์เมื่อข้อมูลขาดหายเกิน (นาที)</label>
+            <input type="number" id="setOfflineTimeout" class="input-field" step="1" placeholder="เช่น 5">
+          </div>
+
           <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
           <p id="saveStatus" style="color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; display: none;"></p>
         </div>
@@ -218,6 +257,39 @@
   <script>
     // 🔴 1. วาง URL Web App ของ Google Apps Script ไว้ตรงนี้
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec";
+
+    // ตัวแปรเก็บสถานะการแจ้งเตือน
+    let lastDeviceStatus = null;   // true = online, false = offline
+    let lastPowerOverlimit = null; // true = overlimit, false = normal
+
+    function addNotificationLog(message, type = 'info') {
+      const logsEl = document.getElementById('notificationLogs');
+      if (!logsEl) return;
+      
+      if (logsEl.innerHTML.includes('ยังไม่มีบันทึก')) {
+        logsEl.innerHTML = '';
+      }
+
+      const now = new Date().toLocaleTimeString('th-TH');
+      let badgeColor = 'var(--accent-blue)';
+      if (type === 'danger') badgeColor = 'var(--accent-orange)';
+      if (type === 'warning') badgeColor = 'var(--accent-yellow)';
+      
+      const logItem = document.createElement('div');
+      logItem.className = 'status-row';
+      logItem.style.padding = '10px 0';
+      logItem.innerHTML = `
+        <span class="text-sm"><i class="fa-regular fa-bell" style="color:${badgeColor}; margin-right:5px;"></i> [${now}] ${message}</span>
+        <span style="color: ${badgeColor}; font-weight: 600; font-size: 0.85rem;">${type.toUpperCase()}</span>
+      `;
+      
+      logsEl.insertBefore(logItem, logsEl.firstChild);
+      
+      // จำกัดประวัติแสดงสูงสุดแค่ 20 แถวล่าสุดบนหน้าเว็บย่อย
+      while (logsEl.children.length > 20) {
+        logsEl.removeChild(logsEl.lastChild);
+      }
+    }
 
     function switchPage(pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
@@ -395,6 +467,54 @@
         todayGauge.update();
 
         updateSavingsDisplay();
+
+        // ==========================================
+        // 🚨 LOGIC ประมวลผลและแจ้งเตือนความผิดปกติ
+        // ==========================================
+        
+        // 1. ตรวจสอบสถานะการออนไลน์ (Online / Offline)
+        const currentOnline = data.isOnline;
+        const deviceStatusEl = document.getElementById('notifDeviceStatus');
+        if (deviceStatusEl) {
+          if (currentOnline) {
+            deviceStatusEl.innerText = "🟢 ออนไลน์ปกติ (Connected)";
+            deviceStatusEl.style.color = "var(--accent-green)";
+            if (lastDeviceStatus === false) {
+              addNotificationLog("อุปกรณ์กลับมาเชื่อมต่อสัญญาณออนไลน์เรียบร้อย", "info");
+            } else if (lastDeviceStatus === null) {
+              addNotificationLog("เชื่อมต่อระบบกับฐานข้อมูลสำเร็จ", "info");
+            }
+          } else {
+            deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)";
+            deviceStatusEl.style.color = "var(--accent-orange)";
+            if (lastDeviceStatus === true || lastDeviceStatus === null) {
+              addNotificationLog("แจ้งเตือน: อุปกรณ์ขาดการส่งข้อมูลเกินเวลาที่ตั้งไว้ (Offline)", "danger");
+            }
+          }
+          lastDeviceStatus = currentOnline;
+        }
+
+        // 2. ตรวจสอบสถานะไฟฟ้าโหลดเกินพิกัด (Over-power threshold)
+        const currentPowerKw = parseFloat(powerKw);
+        const maxLimitKw = parseFloat(data.maxPowerLimit) || 5.0;
+        const powerStatusEl = document.getElementById('notifPowerStatus');
+        if (powerStatusEl) {
+          if (currentPowerKw > maxLimitKw) {
+            powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`;
+            powerStatusEl.style.color = "var(--accent-orange)";
+            if (lastPowerOverlimit === false || lastPowerOverlimit === null) {
+              addNotificationLog(`⚠️ ตรวจพบการใช้ไฟเกินกำลังที่กำหนด: พุ่งสูงถึง ${powerKw} kW (ลิมิตไว้ที่ ${maxLimitKw} kW)`, "warning");
+            }
+            lastPowerOverlimit = true;
+          } else {
+            powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`;
+            powerStatusEl.style.color = "var(--accent-green)";
+            if (lastPowerOverlimit === true) {
+              addNotificationLog(`พลังงานไฟฟ้ากลับเข้าสู่ระดับปกติ: ปัจจุบันเหลือ ${powerKw} kW`, "info");
+            }
+            lastPowerOverlimit = false;
+          }
+        }
       });
     }
 
@@ -404,6 +524,8 @@
         document.getElementById('setFtRate').value = config.ftRate || 0.3972;
         document.getElementById('setService').value = config.serviceCharge || 38.22;
         document.getElementById('setVat').value = config.vatRate || 0.07;
+        document.getElementById('setMaxPower').value = config.maxPower || 5.0;
+        document.getElementById('setOfflineTimeout').value = config.offlineTimeout || 5;
       });
     }
 
@@ -412,11 +534,13 @@
       const ftRate = document.getElementById('setFtRate').value;
       const serviceCharge = document.getElementById('setService').value;
       const vatRate = document.getElementById('setVat').value;
+      const maxPower = document.getElementById('setMaxPower').value;
+      const offlineTimeout = document.getElementById('setOfflineTimeout').value;
       
       const btn = document.querySelector('.btn-primary');
       btn.innerText = "กำลังบันทึก...";
       
-      fetch(`${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}`)
+      fetch(`${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}`)
         .then(res => res.json())
         .then(res => {
           btn.innerText = "💾 บันทึกการตั้งค่า";
