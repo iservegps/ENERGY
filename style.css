@@ -278,7 +278,7 @@ body {
   justify-content: center; 
 } 
 .progress-bar-container { background: rgba(255, 255, 255, 0.05); height: 12px; border-radius: 10px; margin-top: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); } 
-.progress-bar { background: linear-gradient(90deg, var(--accent-orange), var(--accent-yellow)); height: 100%; width: 0%; transition: width 1s ease; border-radius: 10px; } 
+.progress-bar { background: linear-gradient(90deg, var(--accent-green), var(--accent-yellow)); height: 100%; width: 0%; transition: width 1s ease; border-radius: 10px; } 
 
 .bottom-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; } 
 .card { 
@@ -312,7 +312,7 @@ body {
   box-shadow: 0 12px 35px rgba(0, 240, 255, 0.15), inset 0 0 10px rgba(0, 240, 255, 0.05); 
   border-color: rgba(0, 240, 255, 0.35); 
 } 
-.click-icon { font-size: 1.2rem; color: var(--accent-orange); opacity: 0.5; transition: opacity 0.2s; } 
+.click-icon { font-size: 1.2rem; color: var(--accent-green); opacity: 0.5; transition: opacity 0.2s; } 
 .clickable-card:hover .click-icon { opacity: 1; } 
 
 .modal-overlay { 
@@ -382,7 +382,7 @@ body {
   outline: none; 
   transition: var(--transition); 
 } 
-.time-select:focus, .time-select:hover { border-color: var(--accent-orange); box-shadow: 0 0 10px rgba(255, 87, 34, 0.3); } 
+.time-select:focus, .time-select:hover { border-color: var(--accent-green); box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); } 
 .modal-chart-wrapper { height: 380px; width: 100%; position: relative; } 
 
 @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.96) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } } 
