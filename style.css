@@ -119,12 +119,34 @@ body {
 .house-circle { width: 70px; height: 70px; border-radius: 50%; background: rgba(17, 25, 40, 0.85); border: 3px solid var(--accent-green); color: var(--accent-green); font-size: 1.5rem; animation: circlePulse 2s infinite alternate; }
 @keyframes circlePulse { 0% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.2); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); transform: scale(1.04); } }
 
-/* Savings Card */
-.saving-card { padding: 15px 20px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); }
-.saving-card-content { display: flex; align-items: center; gap: 20px; }
-.piggy-icon-container { width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); color: var(--accent-green); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(16, 185, 129, 0.15); }
-.saving-value { font-size: 2rem; font-weight: 700; line-height: 1; margin-right: 5px;}
-.saving-subtext { font-size: 0.85rem; margin-top: 5px; }
+/* ================= ONLINE/OFFLINE STATUS CARD (NEW) ================= */
+.status-card { padding: 15px 20px; background: rgba(17, 25, 40, 0.6); border: 1px solid var(--card-border); position: relative; overflow: hidden; }
+.status-card-content { display: flex; align-items: center; gap: 20px; }
+
+.status-icon-container { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; z-index: 2; font-size: 1.5rem; }
+
+/* Online Animation State */
+.status-icon-container.online { background: rgba(16, 185, 129, 0.12); color: var(--accent-green); box-shadow: 0 0 12px rgba(16, 185, 129, 0.2); }
+.status-icon-container.online .status-pulse { position: absolute; width: 100%; height: 100%; border-radius: 50%; background: var(--accent-green); opacity: 0.4; animation: pulseOnline 2s infinite cubic-bezier(0.4, 0, 0.2, 1); z-index: -1; }
+
+/* Offline Animation State */
+.status-icon-container.offline { background: rgba(255, 87, 34, 0.12); color: var(--accent-orange); box-shadow: 0 0 12px rgba(255, 87, 34, 0.2); }
+.status-icon-container.offline .status-pulse { position: absolute; width: 100%; height: 100%; border-radius: 50%; border: 2px solid var(--accent-orange); animation: pulseOffline 1.5s infinite; z-index: -1; }
+
+.status-details { z-index: 2; }
+.status-title { font-size: 0.9rem; font-weight: 600; color: var(--text-muted); }
+.status-value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; letter-spacing: 1px; margin-top: 2px; }
+.status-subtext { font-size: 0.85rem; margin-top: 3px; }
+
+@keyframes pulseOnline {
+  0% { transform: scale(1); opacity: 0.4; }
+  70% { transform: scale(1.6); opacity: 0; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes pulseOffline {
+  0% { transform: scale(1); opacity: 1; border-color: var(--accent-orange); }
+  100% { transform: scale(1.3); opacity: 0; border-color: transparent; }
+}
 
 /* Charts Area */
 .chart-container { position: relative; height: 100px; width: 100%; margin-top: auto; } 
@@ -148,7 +170,7 @@ body {
 .btn-secondary { display: inline-block; text-align: center; padding: 12px 20px; border-radius: 10px; background: rgba(0, 240, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 240, 255, 0.3); text-decoration: none; font-weight: 600; transition: var(--transition); }
 .btn-secondary:hover { background: rgba(0, 240, 255, 0.2); transform: translateY(-2px); }
 
-/* ================= NOTIFICATION LOGS (NEW) ================= */
+/* ================= NOTIFICATION LOGS ================= */
 #notificationLogs::-webkit-scrollbar { width: 5px; }
 #notificationLogs::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.01); }
 #notificationLogs::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
