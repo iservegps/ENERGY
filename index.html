@@ -1,173 +1,437 @@
-:root { 
-  --bg-color: #060913; 
-  --card-bg: rgba(17, 25, 40, 0.5);
-  --card-border: rgba(255, 255, 255, 0.07);
-  --text-main: #f3f4f6; 
-  --text-muted: #94a3b8; 
-  --accent-orange: #ff5722; 
-  --accent-yellow: #ffc107; 
-  --accent-blue: #00f0ff; 
-  --accent-green: #10b981; 
-  --radius: 20px; 
-  --blur: 16px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --sidebar-width: 250px;
-}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Smart Energy Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
 
-* { box-sizing: border-box; } 
-body { 
-  font-family: 'Chakra Petch', sans-serif; 
-  background-color: var(--bg-color); 
-  background-image: radial-gradient(circle at 50% 50%, rgba(20, 30, 55, 0.6) 0%, #060913 100%), linear-gradient(rgba(255, 255, 255, 0.005) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.005) 1px, transparent 1px);
-  background-size: 100% 100%, 40px 40px, 40px 40px;
-  color: var(--text-main); 
-  margin: 0; 
-  display: flex;
-  min-height: 100vh;
-}
+  <nav class="sidebar">
+    <div class="nav-brand"><i class="fa-solid fa-bolt"></i> <span class="nav-text">SmartMeter</span></div>
+    <div class="nav-links">
+      <a href="#" class="nav-item active" onclick="switchPage('dashboard')">
+        <i class="fa-solid fa-house"></i><span class="nav-text">หน้าหลัก</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchPage('history')">
+        <i class="fa-solid fa-chart-line"></i><span class="nav-text">ประวัติ</span>
+      </a>
+      <a href="#" class="nav-item" onclick="switchPage('settings')">
+        <i class="fa-solid fa-gear"></i><span class="nav-text">ตั้งค่า</span>
+      </a>
+    </div>
+  </nav>
 
-/* ================= NAVIGATION ================= */
-.sidebar {
-  width: var(--sidebar-width);
-  background: rgba(10, 15, 30, 0.8);
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
-  border-right: 1px solid var(--card-border);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  height: 100vh;
-  z-index: 100;
-}
-.nav-brand { padding: 30px 20px; font-size: 1.5rem; font-weight: 700; color: var(--accent-blue); display: flex; align-items: center; gap: 10px; }
-.nav-links { display: flex; flex-direction: column; gap: 5px; padding: 0 15px; }
-.nav-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; color: var(--text-muted); text-decoration: none; border-radius: 12px; font-weight: 500; transition: var(--transition); }
-.nav-item:hover { background: rgba(255,255,255,0.05); color: #fff; }
-.nav-item.active { background: rgba(0, 240, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 240, 255, 0.2); }
-.nav-item i { font-size: 1.2rem; width: 24px; text-align: center; }
+  <div class="main-content">
+    
+    <div id="page-dashboard" class="page active">
+      <div class="top-section">
+        <div class="hero-card">
+          <div class="hero-content">
+            <h1 class="hero-title">Energy <br>Overview</h1>
+            <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
+            <p class="text-sm" style="color: var(--text-muted); margin-top: 8px;">
+              <i class="fa-regular fa-clock"></i> อัปเดตล่าสุด: <span id="last-update">กำลังเชื่อมต่อ...</span>
+            </p>
+          </div>
+          
+          <div class="hero-right-panel">
+            <div class="energy-flow-container">
+              <h3 class="flow-title">⚡ การไหลของพลังงาน</h3>
+              <div class="flow-widget">
+                <svg class="flow-svg" viewBox="0 0 320 160">
+                  <path class="flow-path-bg" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+                  <path id="flowPath" class="flow-path-active" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+                  <polygon points="208,50 216,55 208,60" fill="var(--accent-blue)" />
+                </svg>
+                
+                <div class="flow-box grid-box">
+                  <div class="flow-icon"><i class="fa-solid fa-tower-observation"></i></div>
+                  <div class="flow-details">
+                    <span class="flow-label">การไฟฟ้า</span>
+                    <span class="flow-value"><span id="gridPowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+                  </div>
+                </div>
+                
+                <div class="flow-box house-circle-container">
+                  <div class="house-circle"><i class="fa-solid fa-house-chimney"></i></div>
+                  <div class="flow-details house-details">
+                    <span class="flow-label">กำลังใช้ไฟฟ้า</span>
+                    <span class="flow-value"><span id="housePowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="card saving-card hero-saving-card">
+              <div class="saving-card-content">
+                <div class="piggy-icon-container"><i class="fa-solid fa-piggy-bank" style="font-size: 1.5rem;"></i></div>
+                <div class="saving-details">
+                  <div class="saving-header"><span class="saving-title">ประหยัดค่าไฟ</span></div>
+                  <div class="saving-value-wrapper">
+                    <span class="saving-value" id="savingsValue">0</span><span class="saving-unit">บาท</span>
+                  </div>
+                  <div class="saving-subtext" id="savingsSubtext">กำลังคำนวณ...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
+        </div>
 
-/* ================= MAIN CONTENT ================= */
-.main-content {
-  flex: 1;
-  margin-left: var(--sidebar-width);
-  padding: 30px;
-  width: calc(100% - var(--sidebar-width));
-  max-width: 1400px;
-}
+        <div class="side-panel">
+          <div class="info-card">
+            <div class="flex-between"><h3 class="card-title">สะสมทั้งหมด (Total)</h3></div>
+            <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">kWh</span></div>
+            <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header"><h3 class="card-title">เดือนนี้ (This Month)</h3></div>
+            <div class="stat-box" style="margin-bottom: 20px;">
+              <div class="value" id="thisMonthEnergy" style="font-size: 2.2rem; color: var(--accent-blue);">0</div>
+              <div class="unit">kWh (หน่วย)</div>
+            </div>
+            <div class="flex-between" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+              <span class="text-sm">ค่าไฟโดยประมาณ</span>
+              <span style="font-weight: 700; color: var(--accent-green);"><span id="thisMonthCost">0</span> ฿</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-.page { display: none; animation: fadeIn 0.4s ease; }
-.page.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+      <div class="bottom-grid">
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Current Power</h3></div>
+          <div class="stat-row">
+            <div class="stat-box"><div class="value" id="power">0.00</div><div class="unit">kW (ปัจจุบัน)</div></div>
+          </div>
+          <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
+        </div>
 
-.page-title { font-size: 2rem; font-weight: 700; margin: 0 0 5px 0; color: #fff; }
+        <div class="card">
+          <div class="card-header"><h3 class="card-title">Energy Today</h3></div>
+          <div class="gauge-container">
+            <canvas id="todayGauge"></canvas>
+            <div style="position: absolute; bottom: 10px; text-align: center;">
+              <div class="value" id="todayEnergy" style="font-size: 1.5rem;">0</div><div class="unit">kWh</div>
+            </div>
+          </div>
+          <div class="flex-between" style="margin-top: 15px;">
+            <span class="text-sm">Peak: <b id="maxPowerToday">0.00</b> kW</span>
+            <span class="text-sm" style="color: var(--accent-green);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
+          </div>
+        </div>
 
-/* ================= CARDS & UTILS ================= */
-.card, .info-card {
-  background: var(--card-bg); 
-  backdrop-filter: blur(var(--blur));
-  -webkit-backdrop-filter: blur(var(--blur));
-  border: 1px solid var(--card-border);
-  border-radius: var(--radius); 
-  padding: 25px; 
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25); 
-  display: flex; flex-direction: column;
-}
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; } 
-.card-title { font-weight: 600; font-size: 1.1rem; margin: 0; color: var(--text-main); } 
-.stat-row { display: flex; gap: 15px; margin-bottom: 10px; } 
-.stat-box { display: flex; flex-direction: column; } 
-.value { font-size: 2.1rem; font-weight: 700; color: var(--text-main); line-height: 1.1; } 
-.unit { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-top: 5px; } 
-.flex-between { display: flex; justify-content: space-between; align-items: center;} 
-.text-sm { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; } 
+        <div class="card">
+          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-microchip" style="color: var(--accent-yellow)"></i> สถานะฮาร์ดแวร์</h3></div>
+          <div class="status-row"><span class="text-sm">แรงดันไฟ (Voltage)</span><span class="status-val"><span id="sysVoltage">0</span> V</span></div>
+          <div class="status-row"><span class="text-sm">กระแสไฟ (Current)</span><span class="status-val"><span id="sysCurrent">0</span> A</span></div>
+          <div class="status-row"><span class="text-sm">Power Factor (PF)</span><span class="status-val"><span id="sysPf">0</span></span></div>
+          <div class="status-row"><span class="text-sm">Peak เดือนนี้</span><span class="status-val"><span id="sysMaxPower">0</span> kW</span></div>
+        </div>
+      </div>
+    </div>
 
-/* System Status Rows */
-.status-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 0;}
-.status-row:last-child { border-bottom: none; }
-.status-val { font-weight: 600; font-size: 1.1rem; }
+    <div id="page-history" class="page">
+      <div class="history-header">
+        <div>
+          <h2 class="page-title">ประวัติการใช้พลังงาน</h2>
+          <p class="text-sm" id="historySubtitle">แสดงกราฟวิเคราะห์ย้อนหลัง</p>
+        </div>
+        <div class="history-controls">
+          <select id="chartDataType" class="input-field" onchange="loadGraphData()">
+            <option value="energy">พลังงาน (Energy - kWh)</option>
+            <option value="power">กำลังไฟฟ้า (Power - kW)</option>
+            <option value="system">สถานะระบบ (Voltage & Current)</option>
+          </select>
+          <select id="timeRange" class="input-field" onchange="handleRangeChange()">
+            <option value="today">วันนี้ (Today)</option>
+            <option value="yesterday">เมื่อวาน (Yesterday)</option>
+            <option value="7days" selected>ย้อนหลัง 7 วัน (7 Days)</option>
+            <option value="specific_date">📅 เลือกวันที่...</option>
+            <option value="specific_month">📑 เลือกรอบบิล...</option>
+          </select>
+          <input type="date" id="datePicker" class="input-field" style="display: none;" onchange="loadGraphData()">
+          <select id="monthPicker" class="input-field" style="display: none;" onchange="loadGraphData()"></select>
+        </div>
+      </div>
+      
+      <div class="card history-chart-card">
+        <div class="modal-chart-wrapper"><canvas id="historyChartCanvas"></canvas></div>
+      </div>
+    </div>
 
-/* ================= DASHBOARD LAYOUT ================= */
-.top-section { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 20px;} 
-.hero-card { display: flex; justify-content: space-between; align-items: center; gap: 20px; position: relative; background: linear-gradient(135deg, rgba(17, 25, 40, 0.6), rgba(20, 30, 55, 0.3)); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 30px 40px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); } 
-.hero-content { position: relative; z-index: 2; max-width: 50%; } 
-.hero-title { font-size: 2.6rem; font-weight: 700; margin: 0 0 10px 0; line-height: 1.25; background: linear-gradient(135deg, #ffffff 40%, var(--text-muted) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; } 
-.hero-subtitle { color: var(--accent-blue); margin: 0; font-weight: 600; } 
-.house-image { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; object-fit: cover; mix-blend-mode: color-dodge; opacity: 0.12; pointer-events: none; }
-.hero-right-panel { display: flex; flex-direction: column; gap: 15px; z-index: 2; width: 340px; }
-.side-panel { display: flex; flex-direction: column; gap: 20px; } 
-.bottom-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; } 
+    <div id="page-settings" class="page">
+      <h2 class="page-title">การตั้งค่าระบบ</h2>
+      
+      <div class="settings-grid">
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่าการคำนวณบิล</h3>
+          
+          <div class="form-group">
+            <label class="form-label">วันตัดรอบบิล (วันที่ 1-28)</label>
+            <input type="number" id="setBillDay" class="input-field" min="1" max="28" placeholder="เช่น 25">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ค่า Ft (บาท/หน่วย)</label>
+            <input type="number" id="setFtRate" class="input-field" step="0.0001" placeholder="เช่น 0.3972">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ค่าบริการรายเดือน (บาท)</label>
+            <input type="number" id="setService" class="input-field" step="0.01" placeholder="เช่น 38.22">
+          </div>
+          <div class="form-group">
+            <label class="form-label">ภาษีมูลค่าเพิ่ม VAT (ทศนิยม เช่น 0.07)</label>
+            <input type="number" id="setVat" class="input-field" step="0.01" placeholder="เช่น 0.07">
+          </div>
+          <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+          <p id="saveStatus" style="color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; display: none;"></p>
+        </div>
 
-/* Progress Bar */
-.progress-bar-container { background: rgba(255, 255, 255, 0.05); height: 12px; border-radius: 10px; margin-top: 15px; border: 1px solid rgba(255,255,255,0.03); } 
-.progress-bar { background: linear-gradient(90deg, var(--accent-green), var(--accent-yellow)); height: 100%; border-radius: 10px; } 
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-wifi" style="color: var(--accent-blue)"></i> การเชื่อมต่อเครือข่าย</h3>
+          
+          <div class="status-row">
+            <span class="text-sm">ESP IP Address</span>
+            <span class="status-val" id="sysIp" style="color: var(--accent-blue);">0.0.0.0</span>
+          </div>
+          
+          <div style="margin-top: 25px;">
+            <a id="otaBtn" href="#" target="_blank" class="btn-secondary" style="display: none;">
+              <i class="fa-solid fa-cloud-arrow-up"></i> อัปเดตโค้ด OTA (Wi-Fi)
+            </a>
+          </div>
+          <p class="text-sm" style="margin-top: 15px; opacity: 0.7;">
+            * ปุ่ม OTA จะแสดงขึ้นอัตโนมัติเมื่อระบบตรวจจับ IP ของบอร์ด ESP ได้สำเร็จ และบอร์ดของคุณจะต้องอยู่ในเครือข่าย Wi-Fi เดียวกัน
+          </p>
+        </div>
+      </div>
+    </div>
 
-/* Energy Flow Widget */
-.energy-flow-container { background: rgba(17, 25, 40, 0.4); border: 1px solid var(--card-border); border-radius: 16px; padding: 12px; height: 190px; }
-.flow-title { font-size: 0.9rem; font-weight: 600; margin: 0 0 6px 0; }
-.flow-widget { position: relative; width: 320px; height: 150px; margin: 0 auto; }
-.flow-svg { position: absolute; width: 100%; height: 100%; z-index: 1; }
-.flow-path-bg { stroke: rgba(255,255,255,0.04); stroke-width: 3px; fill: none; }
-.flow-path-active { stroke: var(--accent-blue); stroke-width: 3px; fill: none; stroke-dasharray: 8, 8; animation: flowAnimation 2s linear infinite; filter: drop-shadow(0 0 3px var(--accent-blue)); }
-@keyframes flowAnimation { from { stroke-dashoffset: 32; } to { stroke-dashoffset: 0; } }
-.flow-box { position: absolute; display: flex; align-items: center; background: rgba(17, 25, 40, 0.7); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); z-index: 2; }
-.grid-box { left: 0; top: 95px; padding: 6px 8px; gap: 6px; }
-.flow-icon, .house-circle { display: flex; align-items: center; justify-content: center; }
-.flow-icon { width: 32px; height: 32px; background: rgba(0, 240, 255, 0.1); color: var(--accent-blue); border-radius: 8px; }
-.flow-label { font-size: 0.7rem; color: var(--text-muted); }
-.flow-value { font-size: 0.9rem; font-weight: 700; }
-.house-circle-container { right: 0; top: 0; display: flex; flex-direction: column; align-items: center; background: transparent; border: none; }
-.house-circle { width: 70px; height: 70px; border-radius: 50%; background: rgba(17, 25, 40, 0.85); border: 3px solid var(--accent-green); color: var(--accent-green); font-size: 1.5rem; animation: circlePulse 2s infinite alternate; }
-@keyframes circlePulse { 0% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.2); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); transform: scale(1.04); } }
+  </div>
 
-/* Savings Card */
-.saving-card { padding: 15px 20px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); }
-.saving-card-content { display: flex; align-items: center; gap: 20px; }
-.piggy-icon-container { width: 60px; height: 60px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); color: var(--accent-green); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 12px rgba(16, 185, 129, 0.15); }
-.saving-value { font-size: 2rem; font-weight: 700; line-height: 1; margin-right: 5px;}
-.saving-subtext { font-size: 0.85rem; margin-top: 5px; }
+  <script>
+    // 🔴 1. วาง URL Web App ของ Google Apps Script ไว้ตรงนี้
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec";
 
-/* Charts Area */
-.chart-container { position: relative; height: 100px; width: 100%; margin-top: auto; } 
-.gauge-container { position: relative; height: 120px; width: 100%; display: flex; justify-content: center; margin: 10px 0; } 
+    function switchPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      
+      document.getElementById('page-' + pageId).classList.add('active');
+      event.currentTarget.classList.add('active');
 
-/* ================= HISTORY PAGE ================= */
-.history-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px; }
-.history-controls { display: flex; gap: 15px; }
-.history-chart-card { height: 60vh; min-height: 400px; }
-.modal-chart-wrapper { height: 100%; width: 100%; position: relative; }
+      if(pageId === 'history' && !historyChartInstance) {
+        initHistoryChart();
+        loadGraphData();
+      } else if (pageId === 'settings') {
+        fetchSettings();
+      }
+    }
 
-/* ================= SETTINGS PAGE ================= */
-.settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 25px; }
-.form-group { margin-bottom: 20px; }
-.form-label { display: block; margin-bottom: 8px; font-size: 0.95rem; color: var(--text-muted); }
-.input-field { width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); background: rgba(10, 15, 30, 0.6); color: #fff; font-family: 'Chakra Petch', sans-serif; font-size: 1rem; outline: none; transition: var(--transition); }
-.input-field:focus { border-color: var(--accent-blue); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2); }
-.btn-primary { width: 100%; padding: 14px; background: var(--accent-green); color: #000; border: none; border-radius: 10px; font-family: 'Chakra Petch', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: var(--transition); margin-top: 10px; }
-.btn-primary:hover { background: #0ea5e9; box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4); color: #fff; transform: translateY(-2px); }
+    Chart.defaults.font.family = "'Chakra Petch', sans-serif";
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
 
-.btn-secondary { display: inline-block; text-align: center; padding: 12px 20px; border-radius: 10px; background: rgba(0, 240, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 240, 255, 0.3); text-decoration: none; font-weight: 600; transition: var(--transition); }
-.btn-secondary:hover { background: rgba(0, 240, 255, 0.2); transform: translateY(-2px); }
+    const ctxBar = document.getElementById('powerBarChart').getContext('2d');
+    let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80);
+    gradBar.addColorStop(0, '#10b981'); gradBar.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+    let powerData = Array(15).fill(0);
+    const powerBarChart = new Chart(ctxBar, { type: 'bar', data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: gradBar, borderRadius: 4, barPercentage: 0.6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    
+    const ctxGauge = document.getElementById('todayGauge').getContext('2d');
+    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#10b981', 'rgba(255, 255, 255, 0.06)'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
 
-/* ================= RESPONSIVE (MOBILE) ================= */
-@media (max-width: 1024px) {
-  .top-section { grid-template-columns: 1fr; }
-  .hero-card { flex-direction: column; align-items: flex-start; }
-  .hero-content { max-width: 100%; }
-  .hero-right-panel { width: 100%; max-width: 400px; margin: 0 auto; }
-  .settings-grid { grid-template-columns: 1fr; }
-}
+    let historyChartInstance = null;
+    function initHistoryChart() {
+      const ctx = document.getElementById('historyChartCanvas').getContext('2d');
+      historyChartInstance = new Chart(ctx, {
+        type: 'line', data: { labels: [], datasets: [] },
+        options: { 
+          responsive: true, maintainAspectRatio: false, 
+          interaction: { mode: 'index', intersect: false }, 
+          plugins: { legend: { position: 'top', labels: { color: '#e2e8f0' } } },
+          scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } }
+        }
+      });
+    }
 
-@media (max-width: 768px) {
-  .sidebar { width: 100%; height: 70px; flex-direction: row; bottom: 0; top: auto; border-right: none; border-top: 1px solid var(--card-border); justify-content: space-around; padding: 0; align-items: center; }
-  .nav-brand { display: none; }
-  .nav-links { flex-direction: row; width: 100%; justify-content: space-around; padding: 0; gap: 0; }
-  .nav-item { flex-direction: column; gap: 5px; padding: 10px; border-radius: 0; border: none !important; font-size: 0.8rem; }
-  .nav-item.active { background: transparent; color: var(--accent-blue); border-bottom: 3px solid var(--accent-blue) !important; }
-  
-  .main-content { margin-left: 0; padding: 15px 15px 90px 15px; width: 100%; }
-  
-  .history-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-  .history-controls { width: 100%; flex-direction: column; }
-  .energy-flow-container { max-width: 100%; }
-  @media (max-width: 380px) { .flow-widget { transform: scale(0.85); transform-origin: top center; } }
-}
+    function handleRangeChange() {
+      const range = document.getElementById('timeRange').value;
+      const datePicker = document.getElementById('datePicker'); 
+      const monthPicker = document.getElementById('monthPicker');
+      
+      datePicker.style.display = (range === 'specific_date') ? 'block' : 'none';
+      monthPicker.style.display = (range === 'specific_month') ? 'block' : 'none';
+      
+      if (range === 'specific_month' && monthPicker.options.length <= 1) {
+        monthPicker.innerHTML = '<option value="">กำลังโหลด...</option>';
+        fetch(`${WEB_APP_URL}?action=getAvailableMonths`).then(res => res.json()).then(months => {
+            monthPicker.innerHTML = '';
+            months.forEach(m => { monthPicker.appendChild(new Option(m, m)); });
+            loadGraphData(); 
+        });
+      } else {
+        if (range === 'specific_date' && !datePicker.value) datePicker.valueAsDate = new Date();
+        loadGraphData();
+      }
+    }
+
+    function loadGraphData() {
+      if(!historyChartInstance) return;
+      const type = document.getElementById('chartDataType').value;
+      const range = document.getElementById('timeRange').value;
+      const subtitleEl = document.getElementById('historySubtitle');
+      let specificValue = (range === 'specific_date') ? document.getElementById('datePicker').value : (range === 'specific_month') ? document.getElementById('monthPicker').value : null;
+
+      subtitleEl.innerText = "กำลังคำนวณและดึงข้อมูล...";
+      let url = `${WEB_APP_URL}?action=getHistoricalData&range=${range}&type=${type}`;
+      if (specificValue) url += `&specificValue=${specificValue}`;
+      
+      fetch(url).then(res => res.json()).then(data => {
+        let textRange = range === 'today' ? 'วันนี้' : range === 'yesterday' ? 'เมื่อวาน' : range === '7days' ? 'ย้อนหลัง 7 วัน' : specificValue;
+        subtitleEl.innerText = `แสดงผลข้อมูล: ${textRange}`;
+        updateHistoryChartUI(type, data);
+      }).catch(err => subtitleEl.innerText = "ผิดพลาด: " + err.message);
+    }
+
+    function updateHistoryChartUI(type, data) {
+      historyChartInstance.data.labels = data.times || [];
+      historyChartInstance.data.datasets = [];
+      const ctx = document.getElementById('historyChartCanvas').getContext('2d');
+      
+      if (type === 'power') {
+        historyChartInstance.config.type = 'line';
+        let grad = ctx.createLinearGradient(0, 0, 0, 300);
+        grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)'); grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+        historyChartInstance.data.datasets.push({ label: 'Power (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
+      } else if (type === 'energy') {
+        historyChartInstance.config.type = 'bar';
+        let gradE = ctx.createLinearGradient(0, 0, 0, 300);
+        gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+        historyChartInstance.data.datasets.push({ label: 'Energy (kWh)', data: data.energies||[], backgroundColor: gradE, borderRadius: 4 });
+      } else if (type === 'system') {
+        historyChartInstance.config.type = 'line';
+        historyChartInstance.data.datasets.push({ label: 'Voltage (V)', data: data.voltages||[], borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 });
+        historyChartInstance.data.datasets.push({ label: 'Current (A)', data: data.currents||[], borderColor: '#ffc107', yAxisID: 'y1', tension: 0.3 });
+      }
+      historyChartInstance.update();
+    }
+
+    let yesterdayEnergy = 0;
+    function loadYesterdayEnergy() {
+      fetch(`${WEB_APP_URL}?action=getHistoricalData&range=yesterday`).then(res => res.json()).then(data => {
+          yesterdayEnergy = (data && data.energies) ? data.energies.reduce((sum, e) => sum + e, 0) : 0;
+          updateSavingsDisplay();
+      }).catch(e => console.error(e));
+    }
+
+    function updateSavingsDisplay() {
+      const todayEnergy = parseFloat(document.getElementById('todayEnergy').innerText) || 0;
+      const baseYesterday = yesterdayEnergy > 0 ? yesterdayEnergy : 10; 
+      const energySaved = baseYesterday - todayEnergy;
+      const savingsValEl = document.getElementById('savingsValue');
+      const savingsSubtextEl = document.getElementById('savingsSubtext');
+      
+      if (energySaved > 0) {
+        savingsValEl.innerText = Math.round(energySaved * 4.2);
+        savingsSubtextEl.innerHTML = `<span style="color:var(--accent-green)">▲ ${((energySaved/baseYesterday)*100).toFixed(0)}%</span> จากเมื่อวาน`;
+      } else {
+        savingsValEl.innerText = "0";
+        savingsSubtextEl.innerHTML = `<span style="color:var(--accent-orange)">▼ ${((Math.abs(energySaved)/baseYesterday)*100).toFixed(0)}%</span> จากเมื่อวาน`;
+      }
+    }
+
+    function updateDashboard() {
+      fetch(`${WEB_APP_URL}?action=getLatestData`).then(res => res.json()).then(data => {
+        if (data.error) { document.getElementById('period').innerText = data.error; return; }
+        
+        const powerKw = (parseFloat(data.power) / 1000).toFixed(2);
+        
+        document.getElementById('period').innerText = "รอบบิล: " + data.sheetName;
+        document.getElementById('last-update').innerText = data.time;
+        
+        document.getElementById('power').innerText = powerKw;
+        document.getElementById('todayEnergy').innerText = data.todayEnergy;
+        document.getElementById('todayCost').innerText = data.todayCost;
+        document.getElementById('maxPowerToday').innerText = (parseFloat(data.maxPowerToday)/1000).toFixed(2);
+        document.getElementById('thisMonthEnergy').innerText = data.thisMonthEnergy;
+        document.getElementById('thisMonthCost').innerText = data.thisMonthCost;
+        document.getElementById('totalEnergy').innerText = data.totalEnergy;
+        document.getElementById('gridPowerValue').innerText = powerKw;
+        document.getElementById('housePowerValue').innerText = powerKw;
+
+        document.getElementById('sysVoltage').innerText = data.voltage;
+        document.getElementById('sysCurrent').innerText = data.current;
+        document.getElementById('sysPf').innerText = data.pf;
+        document.getElementById('sysMaxPower').innerText = (parseFloat(data.maxPowerMonth)/1000).toFixed(2);
+        document.getElementById('sysIp').innerText = data.espIp || "ไม่พบ IP";
+
+        const flowPath = document.getElementById('flowPath');
+        if (flowPath) {
+          const powerVal = parseFloat(data.power) || 0;
+          flowPath.style.animationPlayState = powerVal < 10 ? 'paused' : 'running';
+          flowPath.style.opacity = powerVal < 10 ? '0.3' : '1';
+          flowPath.style.animationDuration = Math.max(0.2, Math.min(6.0, 1000 / (powerVal || 1))) + 's';
+        }
+
+        const otaBtn = document.getElementById('otaBtn');
+        if (data.espIp && data.espIp !== "") {
+          otaBtn.href = "http://" + data.espIp + "/update";
+          otaBtn.style.display = "inline-block";
+        }
+
+        powerData.shift(); powerData.push(powerKw);
+        powerBarChart.update();
+        
+        let energyVal = parseFloat(data.todayEnergy) || 0; 
+        let maxTarget = energyVal > 15 ? energyVal + 5 : 15;
+        todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; 
+        todayGauge.update();
+
+        updateSavingsDisplay();
+      });
+    }
+
+    function fetchSettings() {
+      fetch(`${WEB_APP_URL}?action=getSettings`).then(res => res.json()).then(config => {
+        document.getElementById('setBillDay').value = config.billDay || 25;
+        document.getElementById('setFtRate').value = config.ftRate || 0.3972;
+        document.getElementById('setService').value = config.serviceCharge || 38.22;
+        document.getElementById('setVat').value = config.vatRate || 0.07;
+      });
+    }
+
+    function saveSettings() {
+      const billDay = document.getElementById('setBillDay').value;
+      const ftRate = document.getElementById('setFtRate').value;
+      const serviceCharge = document.getElementById('setService').value;
+      const vatRate = document.getElementById('setVat').value;
+      
+      const btn = document.querySelector('.btn-primary');
+      btn.innerText = "กำลังบันทึก...";
+      
+      fetch(`${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}`)
+        .then(res => res.json())
+        .then(res => {
+          btn.innerText = "💾 บันทึกการตั้งค่า";
+          const status = document.getElementById('saveStatus');
+          status.innerText = res.message;
+          status.style.display = 'block';
+          setTimeout(() => status.style.display = 'none', 3000);
+          updateDashboard(); 
+        });
+    }
+
+    updateDashboard();
+    loadYesterdayEnergy();
+    setInterval(updateDashboard, 10000); 
+
+  </script>
+</body>
+</html>
