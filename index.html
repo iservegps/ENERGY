@@ -34,6 +34,9 @@
           <div class="hero-content">
             <h1 class="hero-title">Energy <br>Overview</h1>
             <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
+            <p class="text-sm" style="color: var(--text-muted); margin-top: 8px;">
+              <i class="fa-regular fa-clock"></i> อัปเดตล่าสุด: <span id="last-update">กำลังเชื่อมต่อ...</span>
+            </p>
           </div>
           
           <div class="hero-right-panel">
@@ -68,9 +71,7 @@
               <div class="saving-card-content">
                 <div class="piggy-icon-container"><i class="fa-solid fa-piggy-bank" style="font-size: 1.5rem;"></i></div>
                 <div class="saving-details">
-                  <div class="saving-header">
-                    <span class="saving-title">ประหยัดค่าไฟ</span>
-                  </div>
+                  <div class="saving-header"><span class="saving-title">ประหยัดค่าไฟ</span></div>
                   <div class="saving-value-wrapper">
                     <span class="saving-value" id="savingsValue">0</span><span class="saving-unit">บาท</span>
                   </div>
@@ -127,9 +128,11 @@
         </div>
 
         <div class="card">
-          <div class="card-header"><h3 class="card-title">Power Trend</h3></div>
-          <div class="stat-box" style="margin-bottom: 10px;"><div class="unit">อัปเดต: <span id="last-update">กำลังโหลด...</span></div></div>
-          <div class="chart-container" style="height: 120px;"><canvas id="trendLineChart"></canvas></div>
+          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-microchip" style="color: var(--accent-yellow)"></i> สถานะฮาร์ดแวร์</h3></div>
+          <div class="status-row"><span class="text-sm">แรงดันไฟ (Voltage)</span><span class="status-val"><span id="sysVoltage">0</span> V</span></div>
+          <div class="status-row"><span class="text-sm">กระแสไฟ (Current)</span><span class="status-val"><span id="sysCurrent">0</span> A</span></div>
+          <div class="status-row"><span class="text-sm">Power Factor (PF)</span><span class="status-val"><span id="sysPf">0</span></span></div>
+          <div class="status-row"><span class="text-sm">Peak เดือนนี้</span><span class="status-val"><span id="sysMaxPower">0</span> kW</span></div>
         </div>
       </div>
     </div>
@@ -164,61 +167,58 @@
     </div>
 
     <div id="page-settings" class="page">
-      <h2 class="page-title">การตั้งค่าระบบ & สถานะ</h2>
+      <h2 class="page-title">การตั้งค่าระบบ</h2>
       
       <div class="settings-grid">
         <div class="card">
-          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders"></i> ตั้งค่าการคำนวณบิล</h3>
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่าการคำนวณบิล</h3>
           
           <div class="form-group">
             <label class="form-label">วันตัดรอบบิล (วันที่ 1-28)</label>
             <input type="number" id="setBillDay" class="input-field" min="1" max="28" placeholder="เช่น 25">
           </div>
-          
           <div class="form-group">
             <label class="form-label">ค่า Ft (บาท/หน่วย)</label>
             <input type="number" id="setFtRate" class="input-field" step="0.0001" placeholder="เช่น 0.3972">
           </div>
-          
           <div class="form-group">
             <label class="form-label">ค่าบริการรายเดือน (บาท)</label>
             <input type="number" id="setService" class="input-field" step="0.01" placeholder="เช่น 38.22">
           </div>
-          
           <div class="form-group">
             <label class="form-label">ภาษีมูลค่าเพิ่ม VAT (ทศนิยม เช่น 0.07)</label>
             <input type="number" id="setVat" class="input-field" step="0.01" placeholder="เช่น 0.07">
           </div>
-          
           <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
           <p id="saveStatus" style="color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; display: none;"></p>
         </div>
 
-        <div class="card system-status-card">
-          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-microchip"></i> สถานะฮาร์ดแวร์</h3>
+        <div class="card">
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-wifi" style="color: var(--accent-blue)"></i> การเชื่อมต่อเครือข่าย</h3>
           
-          <div class="status-row"><span class="text-sm">แรงดันไฟ (Voltage)</span><span class="status-val"><span id="sysVoltage">0</span> V</span></div>
-          <div class="status-row"><span class="text-sm">กระแสไฟ (Current)</span><span class="status-val"><span id="sysCurrent">0</span> A</span></div>
-          <div class="status-row"><span class="text-sm">Power Factor (PF)</span><span class="status-val"><span id="sysPf">0</span></span></div>
-          <div class="status-row"><span class="text-sm">Peak เดือนนี้</span><span class="status-val"><span id="sysMaxPower">0</span> kW</span></div>
-          <div class="status-row"><span class="text-sm">ESP IP Address</span><span class="status-val" id="sysIp" style="color: var(--accent-blue);">0.0.0.0</span></div>
+          <div class="status-row">
+            <span class="text-sm">ESP IP Address</span>
+            <span class="status-val" id="sysIp" style="color: var(--accent-blue);">0.0.0.0</span>
+          </div>
           
           <div style="margin-top: 25px;">
             <a id="otaBtn" href="#" target="_blank" class="btn-secondary" style="display: none;">
               <i class="fa-solid fa-cloud-arrow-up"></i> อัปเดตโค้ด OTA (Wi-Fi)
             </a>
           </div>
+          <p class="text-sm" style="margin-top: 15px; opacity: 0.7;">
+            * ปุ่ม OTA จะแสดงขึ้นอัตโนมัติเมื่อระบบตรวจจับ IP ของบอร์ด ESP ได้สำเร็จ และบอร์ดของคุณจะต้องอยู่ในเครือข่าย Wi-Fi เดียวกัน
+          </p>
         </div>
       </div>
     </div>
 
-  </div> <script>
+  </div>
+
+  <script>
     // 🔴 1. วาง URL Web App ของ Google Apps Script ไว้ตรงนี้
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec";
 
-    // ==========================================
-    // UI & NAVIGATION CONTROL
-    // ==========================================
     function switchPage(pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -234,14 +234,10 @@
       }
     }
 
-    // ==========================================
-    // CHART INITIALIZATION
-    // ==========================================
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
     Chart.defaults.color = '#94a3b8';
     Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
 
-    // Dashboard Charts
     const ctxBar = document.getElementById('powerBarChart').getContext('2d');
     let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80);
     gradBar.addColorStop(0, '#10b981'); gradBar.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
@@ -250,13 +246,7 @@
     
     const ctxGauge = document.getElementById('todayGauge').getContext('2d');
     const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#10b981', 'rgba(255, 255, 255, 0.06)'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
-    
-    const ctxLine = document.getElementById('trendLineChart').getContext('2d');
-    let gradLine = ctxLine.createLinearGradient(0, 0, 0, 100);
-    gradLine.addColorStop(0, 'rgba(16, 185, 129, 0.3)'); gradLine.addColorStop(1, 'rgba(16, 185, 129, 0)');
-    const trendLineChart = new Chart(ctxLine, { type: 'line', data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(0), borderColor: '#10b981', borderWidth: 2, tension: 0.4, pointRadius: 0, backgroundColor: gradLine, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
 
-    // History Chart
     let historyChartInstance = null;
     function initHistoryChart() {
       const ctx = document.getElementById('historyChartCanvas').getContext('2d');
@@ -271,9 +261,6 @@
       });
     }
 
-    // ==========================================
-    // HISTORY & GRAPH LOGIC
-    // ==========================================
     function handleRangeChange() {
       const range = document.getElementById('timeRange').value;
       const datePicker = document.getElementById('datePicker'); 
@@ -302,12 +289,13 @@
       const subtitleEl = document.getElementById('historySubtitle');
       let specificValue = (range === 'specific_date') ? document.getElementById('datePicker').value : (range === 'specific_month') ? document.getElementById('monthPicker').value : null;
 
-      subtitleEl.innerText = "กำลังดึงข้อมูลย้อนหลัง...";
+      subtitleEl.innerText = "กำลังคำนวณและดึงข้อมูล...";
       let url = `${WEB_APP_URL}?action=getHistoricalData&range=${range}&type=${type}`;
       if (specificValue) url += `&specificValue=${specificValue}`;
       
       fetch(url).then(res => res.json()).then(data => {
-        subtitleEl.innerText = `ข้อมูล: ${range === 'today' ? 'วันนี้' : range === 'yesterday' ? 'เมื่อวาน' : 'ย้อนหลัง'}`;
+        let textRange = range === 'today' ? 'วันนี้' : range === 'yesterday' ? 'เมื่อวาน' : range === '7days' ? 'ย้อนหลัง 7 วัน' : specificValue;
+        subtitleEl.innerText = `แสดงผลข้อมูล: ${textRange}`;
         updateHistoryChartUI(type, data);
       }).catch(err => subtitleEl.innerText = "ผิดพลาด: " + err.message);
     }
@@ -335,9 +323,6 @@
       historyChartInstance.update();
     }
 
-    // ==========================================
-    // DASHBOARD & REALTIME LOGIC
-    // ==========================================
     let yesterdayEnergy = 0;
     function loadYesterdayEnergy() {
       fetch(`${WEB_APP_URL}?action=getHistoricalData&range=yesterday`).then(res => res.json()).then(data => {
@@ -368,8 +353,9 @@
         
         const powerKw = (parseFloat(data.power) / 1000).toFixed(2);
         
-        // Update Dashboard
         document.getElementById('period').innerText = "รอบบิล: " + data.sheetName;
+        document.getElementById('last-update').innerText = data.time;
+        
         document.getElementById('power').innerText = powerKw;
         document.getElementById('todayEnergy').innerText = data.todayEnergy;
         document.getElementById('todayCost').innerText = data.todayCost;
@@ -377,18 +363,15 @@
         document.getElementById('thisMonthEnergy').innerText = data.thisMonthEnergy;
         document.getElementById('thisMonthCost').innerText = data.thisMonthCost;
         document.getElementById('totalEnergy').innerText = data.totalEnergy;
-        document.getElementById('last-update').innerText = data.time;
         document.getElementById('gridPowerValue').innerText = powerKw;
         document.getElementById('housePowerValue').innerText = powerKw;
 
-        // Update System Status (Settings Page)
         document.getElementById('sysVoltage').innerText = data.voltage;
         document.getElementById('sysCurrent').innerText = data.current;
         document.getElementById('sysPf').innerText = data.pf;
         document.getElementById('sysMaxPower').innerText = (parseFloat(data.maxPowerMonth)/1000).toFixed(2);
         document.getElementById('sysIp').innerText = data.espIp || "ไม่พบ IP";
 
-        // Flow Animation
         const flowPath = document.getElementById('flowPath');
         if (flowPath) {
           const powerVal = parseFloat(data.power) || 0;
@@ -397,17 +380,14 @@
           flowPath.style.animationDuration = Math.max(0.2, Math.min(6.0, 1000 / (powerVal || 1))) + 's';
         }
 
-        // OTA Button
         const otaBtn = document.getElementById('otaBtn');
         if (data.espIp && data.espIp !== "") {
           otaBtn.href = "http://" + data.espIp + "/update";
           otaBtn.style.display = "inline-block";
         }
 
-        // Charts update
         powerData.shift(); powerData.push(powerKw);
         powerBarChart.update();
-        trendLineChart.data.datasets[0].data = powerData; trendLineChart.update();
         
         let energyVal = parseFloat(data.todayEnergy) || 0; 
         let maxTarget = energyVal > 15 ? energyVal + 5 : 15;
@@ -418,9 +398,6 @@
       });
     }
 
-    // ==========================================
-    // SETTINGS LOGIC
-    // ==========================================
     function fetchSettings() {
       fetch(`${WEB_APP_URL}?action=getSettings`).then(res => res.json()).then(config => {
         document.getElementById('setBillDay').value = config.billDay || 25;
@@ -447,11 +424,10 @@
           status.innerText = res.message;
           status.style.display = 'block';
           setTimeout(() => status.style.display = 'none', 3000);
-          updateDashboard(); // Refresh data with new calculation
+          updateDashboard(); 
         });
     }
 
-    // Initialize App
     updateDashboard();
     loadYesterdayEnergy();
     setInterval(updateDashboard, 10000); 
