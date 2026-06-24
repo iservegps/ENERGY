@@ -3,16 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Smart Energy Dashboard</title>
+  <title>สมาร์ทมิเตอร์ แดชบอร์ด</title>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  
+  <!-- ================= PWA CONFIGURATION ================= -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#060913">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="สมาร์ทมิเตอร์">
+  <!-- ===================================================== -->
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
   <nav class="sidebar">
-    <div class="nav-brand"><i class="fa-solid fa-bolt"></i> <span class="nav-text">SmartMeter</span></div>
+    <div class="nav-brand"><i class="fa-solid fa-bolt"></i> <span class="nav-text">สมาร์ทมิเตอร์</span></div>
     <div class="nav-links">
       <a href="#" class="nav-item active" onclick="switchPage('dashboard')">
         <i class="fa-solid fa-house"></i><span class="nav-text">หน้าหลัก</span>
@@ -35,7 +45,7 @@
       <div class="top-section">
         <div class="hero-card">
           <div class="hero-content">
-            <h1 class="hero-title">Energy <br>Overview</h1>
+            <h1 class="hero-title">ภาพรวม<br>การใช้ไฟ</h1>
             <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
             <p class="text-sm" style="color: var(--text-muted); margin-top: 8px;">
               <i class="fa-regular fa-clock"></i> อัปเดตล่าสุด: <span id="last-update">กำลังเชื่อมต่อ...</span>
@@ -92,16 +102,16 @@
 
         <div class="side-panel">
           <div class="info-card">
-            <div class="flex-between"><h3 class="card-title">สะสมทั้งหมด (Total)</h3></div>
-            <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">kWh</span></div>
+            <div class="flex-between"><h3 class="card-title">สะสมทั้งหมด</h3></div>
+            <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">หน่วย (kWh)</span></div>
             <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
           </div>
           
           <div class="card">
-            <div class="card-header"><h3 class="card-title">เดือนนี้ (This Month)</h3></div>
+            <div class="card-header"><h3 class="card-title">เดือนนี้</h3></div>
             <div class="stat-box" style="margin-bottom: 20px;">
               <div class="value" id="thisMonthEnergy" style="font-size: 2.2rem; color: var(--accent-blue);">0</div>
-              <div class="unit">kWh (หน่วย)</div>
+              <div class="unit">หน่วย (kWh)</div>
             </div>
             <div class="flex-between" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
               <span class="text-sm">ค่าไฟโดยประมาณ</span>
@@ -113,33 +123,33 @@
 
       <div class="bottom-grid">
         <div class="card">
-          <div class="card-header"><h3 class="card-title">Current Power</h3></div>
+          <div class="card-header"><h3 class="card-title">กำลังไฟฟ้าปัจจุบัน</h3></div>
           <div class="stat-row">
-            <div class="stat-box"><div class="value" id="power">0.00</div><div class="unit">kW (ปัจจุบัน)</div></div>
+            <div class="stat-box"><div class="value" id="power">0.00</div><div class="unit">กิโลวัตต์ (kW)</div></div>
           </div>
           <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
         </div>
 
         <div class="card">
-          <div class="card-header"><h3 class="card-title">Energy Today</h3></div>
+          <div class="card-header"><h3 class="card-title">การใช้ไฟวันนี้</h3></div>
           <div class="gauge-container">
             <canvas id="todayGauge"></canvas>
             <div style="position: absolute; bottom: 10px; text-align: center;">
-              <div class="value" id="todayEnergy" style="font-size: 1.5rem;">0</div><div class="unit">kWh</div>
+              <div class="value" id="todayEnergy" style="font-size: 1.5rem;">0</div><div class="unit">หน่วย (kWh)</div>
             </div>
           </div>
           <div class="flex-between" style="margin-top: 15px;">
-            <span class="text-sm">Peak: <b id="maxPowerToday">0.00</b> kW</span>
+            <span class="text-sm">สูงสุด: <b id="maxPowerToday">0.00</b> kW</span>
             <span class="text-sm" style="color: var(--accent-green);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
           </div>
         </div>
 
         <div class="card">
           <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-microchip" style="color: var(--accent-yellow)"></i> สถานะฮาร์ดแวร์</h3></div>
-          <div class="status-row"><span class="text-sm">แรงดันไฟ (Voltage)</span><span class="status-val"><span id="sysVoltage">0</span> V</span></div>
-          <div class="status-row"><span class="text-sm">กระแสไฟ (Current)</span><span class="status-val"><span id="sysCurrent">0</span> A</span></div>
-          <div class="status-row"><span class="text-sm">Power Factor (PF)</span><span class="status-val"><span id="sysPf">0</span></span></div>
-          <div class="status-row"><span class="text-sm">Peak เดือนนี้</span><span class="status-val"><span id="sysMaxPower">0</span> kW</span></div>
+          <div class="status-row"><span class="text-sm">แรงดันไฟฟ้า (V)</span><span class="status-val"><span id="sysVoltage">0</span> V</span></div>
+          <div class="status-row"><span class="text-sm">กระแสไฟฟ้า (A)</span><span class="status-val"><span id="sysCurrent">0</span> A</span></div>
+          <div class="status-row"><span class="text-sm">พาวเวอร์แฟกเตอร์ (PF)</span><span class="status-val"><span id="sysPf">0</span></span></div>
+          <div class="status-row"><span class="text-sm">โหลดสูงสุดเดือนนี้</span><span class="status-val"><span id="sysMaxPower">0</span> kW</span></div>
         </div>
       </div>
     </div>
@@ -152,14 +162,14 @@
         </div>
         <div class="history-controls">
           <select id="chartDataType" class="input-field" onchange="loadGraphData()">
-            <option value="energy">พลังงาน (Energy - kWh)</option>
-            <option value="power">กำลังไฟฟ้า (Power - kW)</option>
-            <option value="system">สถานะระบบ (Voltage & Current)</option>
+            <option value="energy">พลังงานไฟฟ้า (หน่วย)</option>
+            <option value="power">กำลังไฟฟ้า (กิโลวัตต์)</option>
+            <option value="system">สถานะระบบ (แรงดัน & กระแส)</option>
           </select>
           <select id="timeRange" class="input-field" onchange="handleRangeChange()">
-            <option value="today">วันนี้ (Today)</option>
-            <option value="yesterday">เมื่อวาน (Yesterday)</option>
-            <option value="7days" selected>ย้อนหลัง 7 วัน (7 Days)</option>
+            <option value="today">วันนี้</option>
+            <option value="yesterday">เมื่อวาน</option>
+            <option value="7days" selected>ย้อนหลัง 7 วัน</option>
             <option value="specific_date">📅 เลือกวันที่...</option>
             <option value="specific_month">📑 เลือกรอบบิล...</option>
           </select>
@@ -229,7 +239,7 @@
           </div>
 
           <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
-            <label class="form-label" style="color: var(--accent-orange);">⚠️ แจ้งเตือนเมื่อใช้ไฟเกินกำหนด (kW)</label>
+            <label class="form-label" style="color: var(--accent-orange);">⚠️ แจ้งเตือนเมื่อใช้ไฟเกินกำหนด (กิโลวัตต์)</label>
             <input type="number" id="setMaxPower" class="input-field" step="0.1" placeholder="เช่น 5.0">
           </div>
           <div class="form-group">
@@ -245,13 +255,13 @@
           <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-wifi" style="color: var(--accent-blue)"></i> การเชื่อมต่อเครือข่าย</h3>
           
           <div class="status-row">
-            <span class="text-sm">ESP IP Address</span>
+            <span class="text-sm">หมายเลข IP ของ ESP</span>
             <span class="status-val" id="sysIp" style="color: var(--accent-blue);">0.0.0.0</span>
           </div>
           
           <div style="margin-top: 25px;">
             <a id="otaBtn" href="#" target="_blank" class="btn-secondary" style="display: none;">
-              <i class="fa-solid fa-cloud-arrow-up"></i> อัปเดตโค้ด OTA (Wi-Fi)
+              <i class="fa-solid fa-cloud-arrow-up"></i> อัปเดตเฟิร์มแวร์ (OTA)
             </a>
           </div>
           <p class="text-sm" style="margin-top: 15px; opacity: 0.7;">
@@ -264,19 +274,11 @@
   </div>
 
   <script>
-    // 🔴 1. วาง URL Web App ของ Google Apps Script ไว้ตรงนี้
+    // ** เปลี่ยน URL ตรงนี้ให้เป็นของ Google Apps Script ของคุณ **
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec";
 
-    // ==========================================
-    // 💾 ระบบแจ้งเตือน (เชื่อม Google Sheets)
-    // ==========================================
-    let lastDeviceStatus = null;   
-    let lastPowerOverlimit = null; 
-
-    // ดึงประวัติจากชีตขึ้นมาแสดง
     function fetchNotifications() {
       const logsEl = document.getElementById('notificationLogs');
-      
       fetch(`${WEB_APP_URL}?action=getNotifications`)
         .then(res => res.json())
         .then(data => {
@@ -285,16 +287,13 @@
             return;
           }
           logsEl.innerHTML = '';
-          data.forEach(log => {
-            renderSingleLog(log.message, log.type, log.time);
-          });
+          data.forEach(log => { renderSingleLog(log.message, log.type, log.time); });
         })
         .catch(err => {
           logsEl.innerHTML = '<p class="text-sm" style="color: var(--accent-orange); text-align: center; padding: 20px 0;">เชื่อมต่อฐานข้อมูลล้มเหลว</p>';
         });
     }
 
-    // ฟังก์ชันวาด UI การแจ้งเตือนบนหน้าจอ
     function renderSingleLog(message, type, timeStr) {
       const logsEl = document.getElementById('notificationLogs');
       let badgeColor = 'var(--accent-blue)';
@@ -311,39 +310,6 @@
       logsEl.appendChild(logItem);
     }
 
-    // ฟังก์ชันบันทึกแจ้งเตือนไปที่ชีต (และโชว์หน้าจอทันที)
-    function addNotificationLog(message, type = 'info') {
-      const now = new Date().toLocaleTimeString('th-TH');
-      const logsEl = document.getElementById('notificationLogs');
-      
-      if (logsEl && logsEl.querySelector('p')) {
-        logsEl.innerHTML = ''; 
-      }
-
-      let badgeColor = 'var(--accent-blue)';
-      if (type === 'danger') badgeColor = 'var(--accent-orange)';
-      if (type === 'warning') badgeColor = 'var(--accent-yellow)';
-
-      const logItem = document.createElement('div');
-      logItem.className = 'status-row';
-      logItem.style.padding = '10px 0';
-      logItem.innerHTML = `
-        <span class="text-sm"><i class="fa-regular fa-bell" style="color:${badgeColor}; margin-right:5px;"></i> [${now}] ${message}</span>
-        <span style="color: ${badgeColor}; font-weight: 600; font-size: 0.85rem;">${type.toUpperCase()}</span>
-      `;
-      
-      if(logsEl) {
-        logsEl.insertBefore(logItem, logsEl.firstChild);
-        while (logsEl.children.length > 50) { logsEl.removeChild(logsEl.lastChild); }
-      }
-
-      // ส่ง API บันทึกลง Google Sheets
-      fetch(`${WEB_APP_URL}?action=logNotification&message=${encodeURIComponent(message)}&type=${type}`)
-        .then(res => res.json())
-        .catch(err => console.error('Error logging to sheet:', err));
-    }
-
-    // ล้างประวัติใน Google Sheets
     function clearNotifications() {
       if(confirm("คุณต้องการล้างประวัติการแจ้งเตือนทั้งหมดในฐานข้อมูลใช่หรือไม่?")) {
         document.getElementById('notificationLogs').innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">กำลังล้างข้อมูล...</p>';
@@ -354,10 +320,6 @@
       }
     }
 
-
-    // ==========================================
-    // 🚀 ระบบแสดงผล UI อื่นๆ
-    // ==========================================
     function switchPage(pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -371,7 +333,7 @@
       } else if (pageId === 'settings') {
         fetchSettings();
       } else if (pageId === 'notifications') {
-        fetchNotifications(); // อัปเดตดึงข้อมูลล่าสุดจากชีตเมื่อเข้าหน้านี้
+        fetchNotifications();
       }
     }
 
@@ -450,16 +412,16 @@
         historyChartInstance.config.type = 'line';
         let grad = ctx.createLinearGradient(0, 0, 0, 300);
         grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)'); grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
-        historyChartInstance.data.datasets.push({ label: 'Power (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
+        historyChartInstance.data.datasets.push({ label: 'กำลังไฟฟ้า (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
       } else if (type === 'energy') {
         historyChartInstance.config.type = 'bar';
         let gradE = ctx.createLinearGradient(0, 0, 0, 300);
         gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
-        historyChartInstance.data.datasets.push({ label: 'Energy (kWh)', data: data.energies||[], backgroundColor: gradE, borderRadius: 4 });
+        historyChartInstance.data.datasets.push({ label: 'พลังงาน (kWh)', data: data.energies||[], backgroundColor: gradE, borderRadius: 4 });
       } else if (type === 'system') {
         historyChartInstance.config.type = 'line';
-        historyChartInstance.data.datasets.push({ label: 'Voltage (V)', data: data.voltages||[], borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 });
-        historyChartInstance.data.datasets.push({ label: 'Current (A)', data: data.currents||[], borderColor: '#ffc107', yAxisID: 'y1', tension: 0.3 });
+        historyChartInstance.data.datasets.push({ label: 'แรงดันไฟฟ้า (V)', data: data.voltages||[], borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 });
+        historyChartInstance.data.datasets.push({ label: 'กระแสไฟฟ้า (A)', data: data.currents||[], borderColor: '#ffc107', yAxisID: 'y1', tension: 0.3 });
       }
       historyChartInstance.update();
     }
@@ -511,7 +473,6 @@
         todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; 
         todayGauge.update();
 
-        // 🚨 UPDATE UI STATUS (ONLINE / OFFLINE)
         const currentOnline = data.isOnline;
         const mainDeviceStatus = document.getElementById('mainDeviceStatus');
         const statusIconContainer = document.getElementById('statusIconContainer');
@@ -520,38 +481,29 @@
         const deviceStatusEl = document.getElementById('notifDeviceStatus');
 
         if (currentOnline) {
-          mainDeviceStatus.innerText = "ONLINE";
+          mainDeviceStatus.innerText = "ออนไลน์";
           mainDeviceStatus.style.color = "var(--accent-green)";
           statusIconContainer.className = "status-icon-container online";
           statusIcon.className = "fa-solid fa-wifi";
           statusSubtext.innerText = "เชื่อมต่อและรับข้อมูลปกติ";
           statusSubtext.style.color = "var(--text-muted)";
-
           if (deviceStatusEl) {
-            deviceStatusEl.innerText = "🟢 ออนไลน์ปกติ (Connected)";
+            deviceStatusEl.innerText = "🟢 ออนไลน์ปกติ";
             deviceStatusEl.style.color = "var(--accent-green)";
           }
-          if (lastDeviceStatus === false) addNotificationLog("อุปกรณ์กลับมาเชื่อมต่อสัญญาณออนไลน์เรียบร้อย", "info");
-          else if (lastDeviceStatus === null) addNotificationLog("เริ่มทำงาน: เชื่อมต่อหน้าจอเว็บสำเร็จ", "info");
         } else {
-          mainDeviceStatus.innerText = "OFFLINE";
+          mainDeviceStatus.innerText = "ออฟไลน์";
           mainDeviceStatus.style.color = "var(--accent-orange)";
           statusIconContainer.className = "status-icon-container offline";
           statusIcon.className = "fa-solid fa-triangle-exclamation";
           statusSubtext.innerText = "อุปกรณ์เงียบหาย/ขาดการติดต่อ";
           statusSubtext.style.color = "var(--accent-orange)";
-
           if (deviceStatusEl) {
-            deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)";
+            deviceStatusEl.innerText = "🔴 ขาดการติดต่อ";
             deviceStatusEl.style.color = "var(--accent-orange)";
           }
-          if (lastDeviceStatus === true || lastDeviceStatus === null) {
-            addNotificationLog("แจ้งเตือน: อุปกรณ์ขาดการส่งข้อมูลเกินเวลาที่ตั้งไว้ (Offline)", "danger");
-          }
         }
-        lastDeviceStatus = currentOnline;
 
-        // 🚨 OVERLIMIT NOTIFICATION
         const currentPowerKw = parseFloat(powerKw);
         const maxLimitKw = parseFloat(data.maxPowerLimit) || 5.0;
         const powerStatusEl = document.getElementById('notifPowerStatus');
@@ -560,17 +512,9 @@
           if (currentPowerKw > maxLimitKw) {
             powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`;
             powerStatusEl.style.color = "var(--accent-orange)";
-            if (lastPowerOverlimit === false || lastPowerOverlimit === null) {
-              addNotificationLog(`⚠️ ตรวจพบการใช้ไฟเกินกำลังที่กำหนด: พุ่งสูงถึง ${powerKw} kW (ลิมิตไว้ที่ ${maxLimitKw} kW)`, "warning");
-            }
-            lastPowerOverlimit = true;
           } else {
             powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`;
             powerStatusEl.style.color = "var(--accent-green)";
-            if (lastPowerOverlimit === true) {
-              addNotificationLog(`พลังงานไฟฟ้ากลับเข้าสู่ระดับปกติ: ปัจจุบันเหลือ ${powerKw} kW`, "info");
-            }
-            lastPowerOverlimit = false;
           }
         }
       });
@@ -612,11 +556,18 @@
 
     // ทำงานเมื่อหน้าโหลดเสร็จ
     window.onload = () => {
-      fetchNotifications(); // ดึงประวัติจากชีต
-      updateDashboard();    // ดึงค่าไฟ
+      fetchNotifications(); 
+      updateDashboard();    
       setInterval(updateDashboard, 10000); 
-    };
 
+      // ================= REGISTER PWA SERVICE WORKER =================
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA Service Worker ลงทะเบียนสำเร็จ!', reg.scope))
+          .catch(err => console.error('PWA Service Worker ลงทะเบียนล้มเหลว:', err));
+      }
+      // ==============================================================
+    };
   </script>
 </body>
 </html>
