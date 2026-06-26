@@ -8,50 +8,47 @@
   <link rel="stylesheet" href="style.css">
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#030712">
+  <meta name="theme-color" content="#060913">
   <link rel="apple-touch-icon" href="icon-192.png">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- Sidebar (เมนูด้านซ้าย) -->
   <nav class="sidebar">
     <div class="nav-brand"><i class="fa-solid fa-bolt"></i> <span class="nav-text">SmartMeter</span></div>
     <div class="nav-links">
-      <a href="#" class="nav-item active" onclick="switchPage('dashboard')">
+      <a href="#" class="nav-item active" onclick="switchPage(event, 'dashboard')">
         <i class="fa-solid fa-house"></i><span class="nav-text">หน้าหลัก</span>
       </a>
-      <a href="#" class="nav-item" onclick="switchPage('history')">
+      <a href="#" class="nav-item" onclick="switchPage(event, 'history')">
         <i class="fa-solid fa-chart-line"></i><span class="nav-text">ประวัติ</span>
       </a>
-      <a href="#" class="nav-item" onclick="switchPage('notifications')">
+      <a href="#" class="nav-item" onclick="switchPage(event, 'notifications')">
         <i class="fa-solid fa-bell"></i><span class="nav-text">แจ้งเตือน</span>
       </a>
-      <a href="#" class="nav-item" onclick="switchPage('settings')">
+      <a href="#" class="nav-item" onclick="switchPage(event, 'settings')">
         <i class="fa-solid fa-gear"></i><span class="nav-text">ตั้งค่า</span>
       </a>
     </div>
   </nav>
 
-  <!-- เนื้อหาหลัก -->
   <div class="main-content">
     
-    <!-- หน้า 1: Dashboard -->
     <div id="page-dashboard" class="page active">
       <div class="top-section">
         <div class="hero-card">
           <div class="hero-content">
             <h1 class="hero-title">Energy <br>Overview</h1>
             <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
-            <p class="text-sm" style="margin-top: 15px; display: flex; align-items: center; gap: 8px;">
-              <i class="fa-regular fa-clock" style="color: var(--accent-blue)"></i> อัปเดตล่าสุด: <span id="last-update" style="color: #fff">กำลังเชื่อมต่อ...</span>
+            <p class="text-sm" style="color: var(--text-muted); margin-top: 8px;">
+              <i class="fa-regular fa-clock"></i> อัปเดตล่าสุด: <span id="last-update">กำลังเชื่อมต่อ...</span>
             </p>
           </div>
           
           <div class="hero-right-panel">
             <div class="energy-flow-container">
-              <h3 class="flow-title"><i class="fa-solid fa-bolt-lightning" style="color: var(--accent-yellow)"></i> การไหลของพลังงาน</h3>
+              <h3 class="flow-title">⚡ การไหลของพลังงาน</h3>
               <div class="flow-widget">
                 <svg class="flow-svg" viewBox="0 0 320 160">
                   <path class="flow-path-bg" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
@@ -63,55 +60,55 @@
                   <div class="flow-icon"><i class="fa-solid fa-tower-observation"></i></div>
                   <div class="flow-details">
                     <span class="flow-label">การไฟฟ้า</span>
-                    <span class="flow-value"><span id="gridPowerValue">0.00</span> <span class="unit" style="font-size: 0.75rem">kW</span></span>
+                    <span class="flow-value"><span id="gridPowerValue">0.00</span> <span class="flow-unit">kW</span></span>
                   </div>
                 </div>
                 
                 <div class="flow-box house-circle-container">
                   <div class="house-circle"><i class="fa-solid fa-house-chimney"></i></div>
                   <div class="flow-details house-details">
-                    <span class="flow-label">กำลังใช้งาน</span>
-                    <span class="flow-value"><span id="housePowerValue">0.00</span> <span class="unit" style="font-size: 0.75rem">kW</span></span>
+                    <span class="flow-label">กำลังใช้ไฟฟ้า</span>
+                    <span class="flow-value"><span id="housePowerValue">0.00</span> <span class="flow-unit">kW</span></span>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div class="status-card">
+            <div class="card status-card">
               <div class="status-card-content">
                 <div class="status-icon-container" id="statusIconContainer">
                   <div class="status-pulse"></div>
                   <i class="fa-solid fa-wifi" id="statusIcon"></i>
                 </div>
                 <div class="status-details">
-                  <div class="status-title">สถานะอุปกรณ์ (ESP32)</div>
-                  <div class="status-value" id="mainDeviceStatus">กำลังโหลด...</div>
-                  <div class="status-subtext" id="statusSubtext" style="color: var(--text-muted)">ตรวจสอบการเชื่อมต่อ</div>
+                  <div class="status-header"><span class="status-title">สถานะอุปกรณ์ (ESP32)</span></div>
+                  <div class="status-value-wrapper">
+                    <span class="status-value" id="mainDeviceStatus">กำลังโหลด...</span>
+                  </div>
+                  <div class="status-subtext" id="statusSubtext">ตรวจสอบการเชื่อมต่อ</div>
                 </div>
               </div>
             </div>
           </div>
+          <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
         </div>
 
         <div class="side-panel">
           <div class="info-card">
             <div class="flex-between"><h3 class="card-title">สะสมทั้งหมด (Total)</h3></div>
-            <div style="display: flex; align-items: baseline; gap: 8px;">
-               <div class="value"><span id="totalEnergy">0.00</span></div>
-               <div class="unit">kWh</div>
-            </div>
+            <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">kWh</span></div>
             <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
           </div>
           
           <div class="card">
-            <div class="card-header"><h3 class="card-title"><i class="fa-regular fa-calendar-check" style="color: var(--accent-blue)"></i> เดือนนี้ (This Month)</h3></div>
-            <div class="stat-box" style="margin-bottom: 25px;">
-              <div class="value" id="thisMonthEnergy" style="font-size: 3rem; color: var(--accent-blue); text-shadow: 0 0 20px rgba(56,189,248,0.3);">0</div>
+            <div class="card-header"><h3 class="card-title">เดือนนี้ (This Month)</h3></div>
+            <div class="stat-box" style="margin-bottom: 20px;">
+              <div class="value" id="thisMonthEnergy" style="font-size: 2.2rem; color: var(--accent-blue);">0</div>
               <div class="unit">kWh (หน่วย)</div>
             </div>
-            <div class="flex-between" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 15px;">
+            <div class="flex-between" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
               <span class="text-sm">ค่าไฟโดยประมาณ</span>
-              <span style="font-size: 1.3rem; font-weight: 700; color: var(--accent-green);"><span id="thisMonthCost">0</span> ฿</span>
+              <span style="font-weight: 700; color: var(--accent-green);"><span id="thisMonthCost">0</span> ฿</span>
             </div>
           </div>
         </div>
@@ -130,12 +127,12 @@
           <div class="card-header"><h3 class="card-title">Energy Today</h3></div>
           <div class="gauge-container">
             <canvas id="todayGauge"></canvas>
-            <div style="position: absolute; bottom: 15px; text-align: center;">
-              <div class="value" id="todayEnergy" style="font-size: 2rem;">0</div><div class="unit">kWh</div>
+            <div style="position: absolute; bottom: 10px; text-align: center;">
+              <div class="value" id="todayEnergy" style="font-size: 1.5rem;">0</div><div class="unit">kWh</div>
             </div>
           </div>
-          <div class="flex-between" style="margin-top: 15px; background: rgba(0,0,0,0.2); padding: 10px 15px; border-radius: 12px;">
-            <span class="text-sm">Peak: <b id="maxPowerToday" style="color:#fff">0.00</b> kW</span>
+          <div class="flex-between" style="margin-top: 15px;">
+            <span class="text-sm">Peak: <b id="maxPowerToday">0.00</b> kW</span>
             <span class="text-sm" style="color: var(--accent-green);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
           </div>
         </div>
@@ -150,7 +147,6 @@
       </div>
     </div>
 
-    <!-- หน้า 2: History -->
     <div id="page-history" class="page">
       <div class="history-header">
         <div>
@@ -181,14 +177,13 @@
       </div>
     </div>
 
-    <!-- หน้า 3: Notifications -->
     <div id="page-notifications" class="page">
       <h2 class="page-title">ระบบแจ้งเตือนระบบไฟ</h2>
       <p class="text-sm">ตรวจสอบสถานะการทำงานของสมาร์ทมิเตอร์และบันทึกเหตุการณ์ผิดปกติ</p>
       
-      <div class="settings-grid" style="margin-top: 30px;">
+      <div class="settings-grid" style="margin-top: 25px;">
         <div class="card">
-          <h3 class="card-title" style="margin-bottom: 25px;"><i class="fa-solid fa-circle-info" style="color: var(--accent-blue)"></i> สถานะอุปกรณ์ปัจจุบัน</h3>
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-circle-info" style="color: var(--accent-blue)"></i> สถานะอุปกรณ์ปัจจุบัน</h3>
           <div class="status-row">
             <span class="text-sm">สถานะการเชื่อมต่อมิเตอร์</span>
             <span id="notifDeviceStatus" class="status-val" style="color: var(--accent-green);">กำลังโหลด...</span>
@@ -200,27 +195,25 @@
         </div>
 
         <div class="card">
-          <div class="flex-between" style="margin-bottom: 25px;">
-            <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-yellow)"></i> ประวัติล่าสุด</h3>
-            <button onclick="clearNotifications()" class="btn-secondary" style="padding: 6px 12px; font-size: 0.85rem; background: rgba(251, 146, 60, 0.1); color: var(--accent-orange); border-color: rgba(251, 146, 60, 0.3);">
-              <i class="fa-solid fa-trash-can"></i> ล้าง
+          <div class="flex-between" style="margin-bottom: 20px;">
+            <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-yellow)"></i> ประวัติการแจ้งเตือนล่าสุด</h3>
+            <button onclick="clearNotifications()" style="background: rgba(255, 87, 34, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.8rem;">
+              <i class="fa-solid fa-trash-can"></i> ล้างประวัติ
             </button>
           </div>
-          <div id="notificationLogs" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 10px;">
+          <div id="notificationLogs" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 5px;">
             <p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">กำลังโหลดประวัติการแจ้งเตือน...</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- หน้า 4: Settings -->
     <div id="page-settings" class="page">
       <h2 class="page-title">การตั้งค่าระบบ</h2>
-      <p class="text-sm">ปรับแต่งพารามิเตอร์ของระบบ SmartMeter</p>
       
-      <div class="settings-grid" style="margin-top: 30px;">
+      <div class="settings-grid">
         <div class="card">
-          <h3 class="card-title" style="margin-bottom: 25px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่าการคำนวณบิล</h3>
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่ามิเตอร์และการคำนวณบิล</h3>
           
           <div class="form-group">
             <label class="form-label">วันตัดรอบบิล (วันที่ 1-28)</label>
@@ -239,25 +232,25 @@
             <input type="number" id="setVat" class="input-field" step="0.01">
           </div>
 
-          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; margin-top: 20px;">
-            <label class="form-label" style="color: var(--accent-blue); font-weight: 600;">🔄 เลขมิเตอร์สะสมรวม (บวกตัวเลขทั้งหมด)</label>
+          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+            <label class="form-label" style="color: var(--accent-blue);">🔄 เลขมิเตอร์สะสมรวม (บวกตัวเลขทั้งหมด)</label>
             <input type="number" id="setInitTotal" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15000">
           </div>
           
-          <div class="form-group" style="background: rgba(52, 211, 153, 0.05); padding: 20px; border-radius: 16px; border: 1px solid rgba(52, 211, 153, 0.2); margin-top: 20px;">
+          <div class="form-group" style="background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2); margin-top: 15px;">
             <label class="form-label" style="color: var(--accent-green); font-weight: bold;"><i class="fa-regular fa-calendar-check"></i> ปรับเลขมิเตอร์ตั้งต้น แยกเฉพาะรอบบิล</label>
-            <p class="text-sm" style="opacity: 0.8; margin-bottom: 12px;">เลือกเดือนที่ต้องการ แล้วแก้ไขตัวเลขได้ทันทีโดยไม่กระทบเดือนอื่น</p>
+            <p class="text-sm" style="opacity: 0.8; margin-bottom: 10px;">เลือกเดือนที่ต้องการ แล้วแก้ไขตัวเลขได้ทันทีโดยไม่กระทบเดือนอื่น</p>
             
-            <select id="settingMonthPicker" class="input-field" onchange="loadCycleMeterForMonth()" style="margin-bottom: 12px;">
+            <select id="settingMonthPicker" class="input-field" onchange="loadCycleMeterForMonth()" style="margin-bottom: 10px;">
               <option value="">กำลังโหลด...</option>
             </select>
             
             <input type="number" id="setInitCycle" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15120">
-            <p class="text-sm" style="opacity: 0.6; margin-top: 8px;">*ใส่เลข 0 หากต้องการให้ระบบคำนวณอัตโนมัติจากตารางชีต</p>
+            <p class="text-sm" style="opacity: 0.6; margin-top: 5px;">*ใส่เลข 0 หากต้องการให้ระบบคำนวณอัตโนมัติจากตารางชีต</p>
           </div>
 
-          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; margin-top: 20px;">
-            <label class="form-label" style="color: var(--accent-orange); font-weight: 600;">⚠️ แจ้งเตือนเมื่อใช้ไฟเกินกำหนด (kW)</label>
+          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+            <label class="form-label" style="color: var(--accent-orange);">⚠️ แจ้งเตือนเมื่อใช้ไฟเกินกำหนด (kW)</label>
             <input type="number" id="setMaxPower" class="input-field" step="0.1">
           </div>
           <div class="form-group">
@@ -265,18 +258,18 @@
             <input type="number" id="setOfflineTimeout" class="input-field" step="1">
           </div>
 
-          <button class="btn-primary" onclick="saveSettings()"><i class="fa-solid fa-floppy-disk"></i> บันทึกการตั้งค่า</button>
-          <p id="saveStatus" style="color: var(--accent-green); font-size: 0.95rem; margin-top: 15px; display: none; text-align: center; font-weight: 600;"></p>
+          <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+          <p id="saveStatus" style="color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; display: none; text-align: center;"></p>
         </div>
 
         <div class="card">
-          <h3 class="card-title" style="margin-bottom: 25px;"><i class="fa-solid fa-wifi" style="color: var(--accent-blue)"></i> การเชื่อมต่อเครือข่าย</h3>
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-wifi" style="color: var(--accent-blue)"></i> การเชื่อมต่อเครือข่าย</h3>
           <div class="status-row">
             <span class="text-sm">ESP IP Address</span>
             <span class="status-val" id="sysIp" style="color: var(--accent-blue);">0.0.0.0</span>
           </div>
-          <div style="margin-top: 30px;">
-            <a id="otaBtn" href="#" target="_blank" class="btn-secondary" style="display: none; width: 100%;">
+          <div style="margin-top: 25px;">
+            <a id="otaBtn" href="#" target="_blank" class="btn-secondary" style="display: none;">
               <i class="fa-solid fa-cloud-arrow-up"></i> อัปเดตโค้ด OTA (Wi-Fi)
             </a>
           </div>
@@ -287,7 +280,7 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxbRsOZOtGUXQGROOlJKYfn7WHmYp8E4mx6G5-Mhrl0Ju2FS32mcFjLjruTs1vWpxm3/exec"; // อย่าลืมแก้ให้เป็น URL ปัจจุบันของคุณ
 
     function fetchNotifications() {
       const logsEl = document.getElementById('notificationLogs');
@@ -306,9 +299,8 @@
       if (type === 'danger') badgeColor = 'var(--accent-orange)';
       if (type === 'warning') badgeColor = 'var(--accent-yellow)';
       const logItem = document.createElement('div');
-      logItem.className = 'status-row'; logItem.style.padding = '12px';
-      logItem.style.background = 'rgba(0,0,0,0.2)'; logItem.style.borderRadius = '12px'; logItem.style.marginBottom = '5px';
-      logItem.innerHTML = `<span class="text-sm" style="color:#fff"><i class="fa-regular fa-bell" style="color:${badgeColor}; margin-right:8px;"></i> [${timeStr}] ${message}</span><span style="color: ${badgeColor}; font-weight: 700; font-size: 0.8rem; padding: 4px 8px; background: rgba(255,255,255,0.05); border-radius: 6px;">${type.toUpperCase()}</span>`;
+      logItem.className = 'status-row'; logItem.style.padding = '10px 0';
+      logItem.innerHTML = `<span class="text-sm"><i class="fa-regular fa-bell" style="color:${badgeColor}; margin-right:5px;"></i> [${timeStr}] ${message}</span><span style="color: ${badgeColor}; font-weight: 600; font-size: 0.85rem;">${type.toUpperCase()}</span>`;
       logsEl.appendChild(logItem);
     }
 
@@ -319,53 +311,38 @@
       }
     }
 
-    function switchPage(pageId) {
+    // 🌟 แก้ไขฟังก์ชัน switchPage เพื่อรองรับ event ป้องกัน Error event is undefined
+    function switchPage(event, pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       document.getElementById('page-' + pageId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      
+      if (event && event.currentTarget) {
+          event.currentTarget.classList.add('active');
+      } else {
+          // หากไม่มี event ถูกส่งมาให้พยายามค้นหาปุ่มที่มีคำสั่งดังกล่าว
+          const link = document.querySelector(`.nav-item[onclick*="${pageId}"]`);
+          if (link) link.classList.add('active');
+      }
 
-      if(pageId === 'history' && !historyChartInstance) { initHistoryChart(); loadGraphData(); } 
+      if (pageId === 'history' && !historyChartInstance) { initHistoryChart(); loadGraphData(); } 
       else if (pageId === 'settings') { fetchSettings(); } 
       else if (pageId === 'notifications') { fetchNotifications(); }
     }
 
-    // Chart.js Default styling
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
-    Chart.defaults.color = '#94a3b8'; 
-    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
-    
+    Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
     const ctxBar = document.getElementById('powerBarChart').getContext('2d');
-    let gradBar = ctxBar.createLinearGradient(0, 0, 0, 100); 
-    gradBar.addColorStop(0, 'rgba(56, 189, 248, 1)'); 
-    gradBar.addColorStop(1, 'rgba(56, 189, 248, 0.1)');
+    let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80); gradBar.addColorStop(0, '#10b981'); gradBar.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
     let powerData = Array(15).fill(0);
-    const powerBarChart = new Chart(ctxBar, { 
-      type: 'bar', 
-      data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: gradBar, borderRadius: 6, barPercentage: 0.7 }] }, 
-      options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } 
-    });
-    
+    const powerBarChart = new Chart(ctxBar, { type: 'bar', data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: gradBar, borderRadius: 4, barPercentage: 0.6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     const ctxGauge = document.getElementById('todayGauge').getContext('2d');
-    const todayGauge = new Chart(ctxGauge, { 
-      type: 'doughnut', 
-      data: { datasets: [{ data: [0, 10], backgroundColor: ['#34d399', 'rgba(255, 255, 255, 0.05)'], borderWidth: 0, circumference: 220, rotation: 250, cutout: '82%', borderRadius: 10 }] }, 
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } 
-    });
-    
+    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#10b981', 'rgba(255, 255, 255, 0.06)'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     let historyChartInstance = null;
 
     function initHistoryChart() {
       const ctx = document.getElementById('historyChartCanvas').getContext('2d');
-      historyChartInstance = new Chart(ctx, { 
-        type: 'line', 
-        data: { labels: [], datasets: [] }, 
-        options: { 
-          responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, 
-          plugins: { legend: { position: 'top', labels: { color: '#f8fafc', font: { family: "'Chakra Petch'", size: 13 } } } }, 
-          scales: { x: { grid: { color: 'rgba(255,255,255,0.03)' } }, y: { grid: { color: 'rgba(255,255,255,0.03)' } } } 
-        } 
-      });
+      historyChartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: '#e2e8f0' } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } } });
     }
 
     function handleRangeChange() {
@@ -409,16 +386,16 @@
       const ctx = document.getElementById('historyChartCanvas').getContext('2d');
       if (type === 'power') {
         historyChartInstance.config.type = 'line';
-        let grad = ctx.createLinearGradient(0, 0, 0, 400); grad.addColorStop(0, 'rgba(52, 211, 153, 0.4)'); grad.addColorStop(1, 'rgba(52, 211, 153, 0.0)');
-        historyChartInstance.data.datasets.push({ label: 'Power (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: '#34d399', backgroundColor: grad, fill: true, tension: 0.4, pointRadius: 3, pointBackgroundColor: '#34d399', borderWidth: 2 });
+        let grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)'); grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+        historyChartInstance.data.datasets.push({ label: 'Power (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
       } else if (type === 'energy') {
         historyChartInstance.config.type = 'bar';
-        let gradE = ctx.createLinearGradient(0, 0, 0, 400); gradE.addColorStop(0, 'rgba(56, 189, 248, 0.9)'); gradE.addColorStop(1, 'rgba(56, 189, 248, 0.2)');
-        historyChartInstance.data.datasets.push({ label: 'Energy (kWh)', data: data.energies||[], backgroundColor: gradE, borderRadius: 6 });
+        let gradE = ctx.createLinearGradient(0, 0, 0, 300); gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+        historyChartInstance.data.datasets.push({ label: 'Energy (kWh)', data: data.energies||[], backgroundColor: gradE, borderRadius: 4 });
       } else if (type === 'system') {
         historyChartInstance.config.type = 'line';
-        historyChartInstance.data.datasets.push({ label: 'Voltage (V)', data: data.voltages||[], borderColor: '#38bdf8', yAxisID: 'y', tension: 0.4, borderWidth: 2, pointRadius: 2 });
-        historyChartInstance.data.datasets.push({ label: 'Current (A)', data: data.currents||[], borderColor: '#fbbf24', yAxisID: 'y1', tension: 0.4, borderWidth: 2, pointRadius: 2 });
+        historyChartInstance.data.datasets.push({ label: 'Voltage (V)', data: data.voltages||[], borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 });
+        historyChartInstance.data.datasets.push({ label: 'Current (A)', data: data.currents||[], borderColor: '#ffc107', yAxisID: 'y1', tension: 0.3 });
       }
       historyChartInstance.update();
     }
@@ -450,11 +427,11 @@
           const powerVal = parseFloat(data.power) || 0;
           flowPath.style.animationPlayState = powerVal < 10 ? 'paused' : 'running';
           flowPath.style.opacity = powerVal < 10 ? '0.3' : '1';
-          flowPath.style.animationDuration = Math.max(0.3, Math.min(4.0, 1000 / (powerVal || 1))) + 's';
+          flowPath.style.animationDuration = Math.max(0.2, Math.min(6.0, 1000 / (powerVal || 1))) + 's';
         }
 
         const otaBtn = document.getElementById('otaBtn');
-        if (data.espIp && data.espIp !== "") { otaBtn.href = "http://" + data.espIp + "/update"; otaBtn.style.display = "inline-flex"; }
+        if (data.espIp && data.espIp !== "") { otaBtn.href = "http://" + data.espIp + "/update"; otaBtn.style.display = "inline-block"; }
 
         powerData.shift(); powerData.push(powerKw); powerBarChart.update();
         let energyVal = parseFloat(data.todayEnergy) || 0; 
@@ -505,8 +482,8 @@
         
         if (config.availableMonths && config.availableMonths.length > 0) {
            config.availableMonths.forEach(m => { monthPicker.appendChild(new Option(m, m)); });
-           monthPicker.value = config.currentMonth; 
-           loadCycleMeterForMonth(); 
+           monthPicker.value = config.currentMonth;
+           loadCycleMeterForMonth();
         } else {
            monthPicker.innerHTML = '<option value="">ไม่มีข้อมูลรอบบิล</option>';
         }
@@ -520,8 +497,11 @@
       document.getElementById('setInitCycle').value = "กำลังโหลด...";
       fetch(`${WEB_APP_URL}?action=getCycleMeter&month=${encodeURIComponent(targetMonth)}`)
         .then(res => res.json())
-        .then(data => { document.getElementById('setInitCycle').value = data.value || 0; })
-        .catch(err => { document.getElementById('setInitCycle').value = 0; });
+        .then(data => {
+            document.getElementById('setInitCycle').value = data.value || 0;
+        }).catch(err => {
+            document.getElementById('setInitCycle').value = 0;
+        });
     }
 
     function saveSettings() {
@@ -537,16 +517,18 @@
       const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
       
       const btn = document.querySelector('.btn-primary');
-      btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> กำลังบันทึก...";
+      btn.innerText = "กำลังบันทึก...";
       
       let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}`;
       
-      if (targetMonth) { url += `&targetMonth=${encodeURIComponent(targetMonth)}&initialCycleMeter=${initialCycleMeter}`; }
+      if (targetMonth) {
+         url += `&targetMonth=${encodeURIComponent(targetMonth)}&initialCycleMeter=${initialCycleMeter}`;
+      }
       
       fetch(url)
         .then(res => res.json())
         .then(res => {
-          btn.innerHTML = "<i class='fa-solid fa-floppy-disk'></i> บันทึกการตั้งค่า";
+          btn.innerText = "💾 บันทึกการตั้งค่า";
           const status = document.getElementById('saveStatus');
           status.innerText = res.message;
           status.style.display = 'block';
@@ -555,8 +537,18 @@
         });
     }
 
+    // 🌟 โหลดระบบ + เพิ่ม Service Worker 
     window.onload = () => {
-      fetchNotifications(); updateDashboard(); setInterval(updateDashboard, 10000); 
+      fetchNotifications(); 
+      updateDashboard(); 
+      setInterval(updateDashboard, 10000); 
+      
+      // การลงทะเบียน Service Worker สำหรับ PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered successfully!', reg))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      }
     };
   </script>
 </body>
